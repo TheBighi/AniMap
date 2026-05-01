@@ -1,0 +1,19 @@
+version: '3.9'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: animap-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: qwerty
+      MYSQL_DATABASE: AniMap
+      MYSQL_USER: animap_user
+      MYSQL_PASSWORD: qwerty
+    ports:
+      - "3306:3306"
+    volumes:
+      - animap_data:/var/lib/mysql
+
+volumes:
+  animap_data:
