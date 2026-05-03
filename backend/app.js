@@ -1,6 +1,9 @@
 const express = require('express')
 
-const sequelize = require('./util/db')
+const { notFoundHandler, errorHandler } = require("./middleware/globalErrorHandler");
+const authMiddleware = require('./middleware/authMiddleware');
+
+const sequelize = require('./utils/db')
 
 const app = express()
 
@@ -14,8 +17,11 @@ sequelize.authenticate()
         console.log(error)
     })
 
-const userRoutes = require('./routes/user.routes')
+const authRoutes = require('./routes/auth.routes')
 
-app.use('/user', userRoutes)
+app.use('/api/auth', authRoutes)
+
+app.use(notFoundHandler);
+app.use(errorHandler);
 
 module.exports = app
