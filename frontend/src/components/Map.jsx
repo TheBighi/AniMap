@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
+import "./Map.css";
 
 const geojson = {
   type: "FeatureCollection",
@@ -26,8 +27,6 @@ const geojson = {
 mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN;
 
 function MapComponent() {
-    const [selectedFeature, setSelectedFeature] = useState(null);
-
     const mapContainer = useRef(null);
     const mapRef = useRef(null);
 
@@ -46,47 +45,49 @@ function MapComponent() {
     geojson.features.forEach((feature) => {
       const el = document.createElement("div");
       el.className = "marker";
-      el.addEventListener("click", () => {
-        setSelectedFeature(feature)
-        console.log("OK")
-    });
+      el.style.cursor = "pointer";
 
       const img = document.createElement("img");
       img.src =
         "https://icons.iconarchive.com/icons/paomedia/small-n-flat/512/map-marker-icon.png";
+      img.style.width = "30px";
+      img.style.height = "30px";
 
       el.appendChild(img);
+
+      const popup = new mapboxgl.Popup({
+        closeButton: true,
+        closeOnClick: false,
+        className: 'custom-popup'
+      }).setHTML(`
+        <div class="popup-content">
+          ${feature.properties.title ? `<h3>${feature.properties.title}</h3>` : ''}
+          <p><strong>Description:</strong> ${feature.properties.description}</p>
+          ${feature.properties.animeName ? `<p><strong>Anime:</strong> ${feature.properties.animeName}</p>` : ''}
+          <p><strong>Coords:</strong> ${feature.properties.latitude || feature.geometry.coordinates[1]}, ${feature.properties.longitude || feature.geometry.coordinates[0]}</p>
+          <div class="images-container">
+            ${feature.properties.animeImgUrl ? `<img src="${feature.properties.animeImgUrl}" alt="Anime Image" class="popup-image" />` : ''}
+            ${feature.properties.IRLImgUrl ? `<img src="${feature.properties.IRLImgUrl}" alt="IRL Image" class="popup-image" />` : ''}
+          </div>
+        </div>
+      `);
 
       new mapboxgl.Marker({
         element: el,
         anchor: "bottom",
       })
         .setLngLat(feature.geometry.coordinates)
+        .setPopup(popup)
         .addTo(map);
     });
   }, []);
 
   return (
-    <>
-      <div
-        ref={mapContainer}
-        style={{ width: "100%", height: "100vh" }}
-      />
-      {selectedFeature && (
-        <div className="modal">
-          <h2>Title: {selectedFeature.properties.title}</h2>
-          <h2>Description: {selectedFeature.properties.description}</h2>
-          <h2>Anime: {selectedFeature.properties.animeName}</h2>
-          <h3>Coords: {selectedFeature.properties.latitude}, {selectedFeature.properties.longitude}</h3>
-
-          <img src={selectedFeature.properties.animeImgUrl} />
-          <img src={selectedFeature.properties.IRLImgUrl} />
-
-          <button onClick={() => setSelectedFeature(null)}>Close</button>
-        </div>
-      )}
-    </>
+    <div
+      ref={mapContainer}
+      style={{ width: "100%", height: "100vh" }}
+    />
   );
 }
 
-export default MapComponent
+export default MapComponent;
