@@ -1,17 +1,32 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
 import './App.css'
-import MapComponent from './components/Map'
+import MapComponent from './components/MapComponent/Map'
+import { BrowserRouter, Routes, Route, Link, Outlet, NavLink } from 'react-router-dom';
+import Auth from './components/login/Auth'
+
+const navLinkStyles = ({ isActive }) => ({
+  color: isActive ? '#007bff' : '#333',
+  textDecoration: isActive ? 'none' : 'underline',
+  fontWeight: isActive ? 'bold' : 'normal',
+  padding: '5px 10px'
+});
 
 function App() {
-  const [count, setCount] = useState(0)
-
+  console.log(document.cookie);
   return (
-    <>
-      <MapComponent></MapComponent>
-    </>
+    <BrowserRouter>
+      <nav>
+        <NavLink style={navLinkStyles} to='/login'>LOGIN</NavLink>
+        <NavLink style={navLinkStyles} to='/map'>MAP</NavLink>
+      </nav>
+
+      <Routes>
+        <Route path="/login" element={<Auth />}/>
+        <Route path="/register" element={<Auth />}/>
+        <Route path="/map" element={<MapComponent />}/>
+        <Route path="/" element={<MapComponent />}/>
+      </Routes>
+    </BrowserRouter>
   )
 }
 

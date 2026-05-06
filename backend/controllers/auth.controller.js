@@ -78,7 +78,14 @@ const login = async (req, res, next) => {
             { expiresIn: '5h' }
         )
 
-        res.json(token)
+        res.cookie('token', token, {
+            httpOnly: true,
+            secure: false,
+            sameSite: 'Lax',
+            maxAge: 5 * 60 * 60 * 1000
+        });
+        console.log(existingUser.username)
+        res.json({ message: 'Logged in successfully', username: existingUser.username })
     }
 
     catch (err) {
