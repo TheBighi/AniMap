@@ -1,7 +1,8 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useContext } from "react";
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import "./Map.css";
+import { AuthContext } from "../../context/AuthContext";
 
 const geojson = {
   type: "FeatureCollection",
@@ -29,6 +30,7 @@ mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN;
 function MapComponent() {
     const mapContainer = useRef(null);
     const mapRef = useRef(null);
+    const { username } = useContext(AuthContext);
 
   useEffect(() => {
     if (mapRef.current) return; // prevent multiple maps
@@ -83,10 +85,9 @@ function MapComponent() {
   }, []);
 
   return (
-    <div
-      ref={mapContainer}
-      style={{ width: "100%", height: "100vh" }}
-    />
+    <div style={{ width: "100%", height: "100vh", position: "relative" }}>
+      <div ref={mapContainer} style={{ width: "100%", height: "100%" }} />
+    </div>
   );
 }
 

@@ -1,4 +1,6 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { AuthContext } from '../../context/AuthContext';
 
 function Auth() {
   const [isLogin, setIsLogin] = useState(true);
@@ -10,6 +12,9 @@ function Auth() {
   const [registerEmail, setRegisterEmail] = useState('');
   const [registerPassword, setRegisterPassword] = useState('');
   const [registerConfirmPassword, setRegisterConfirmPassword] = useState('');
+
+  const navigate = useNavigate();
+  const { login: contextLogin } = useContext(AuthContext);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -23,15 +28,19 @@ function Auth() {
         body: JSON.stringify({ email: loginEmail, password: loginPassword })
       });
       const data = await response.json();
+      console.log('Login response:', data); // Debug log
       if (response.ok) {
-        setMessage('✓ Login successful!');
+        setMessage('Login successful!');
         setLoginEmail('');
         setLoginPassword('');
+        
+        contextLogin(data.username);
+        setTimeout(() => navigate('/map'), 100); // Small delay to ensure state updates
       } else {
         setMessage('✗ ' + (data.message || 'Login failed'));
       }
     } catch (error) {
-      setMessage('✗ Error: ' + error.message);
+      setMessage('Error: ' + error.message);
     }
     setLoading(false);
   };
@@ -47,18 +56,17 @@ function Auth() {
         credentials: 'include',
         body: JSON.stringify({ username: registerUsername, email: registerEmail, password: registerPassword, confirmPassword: registerConfirmPassword })
       });
-      const data = await response.json();
       if (response.ok) {
-        setMessage('✓ Registration successful!');
+        setMessage('Registration successful!');
         setRegisterUsername('');
         setRegisterEmail('');
         setRegisterPassword('');
         setRegisterConfirmPassword('');
       } else {
-        setMessage('✗ ' + (data.message || 'Registration failed'));
+        setMessage('Registration failed');
       }
     } catch (error) {
-      setMessage('✗ Error: ' + error.message);
+      setMessage('Error: ' + error.message);
     }
     setLoading(false);
   };
