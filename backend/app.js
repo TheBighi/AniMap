@@ -18,8 +18,10 @@ sequelize.authenticate()
     })
 
 const authRoutes = require('./routes/auth.routes')
+const pinRoutes = require('./routes/pin.routes');
 
 app.use('/api/auth', authRoutes)
+app.use('/api/pins', pinRoutes);
 
 app.use(notFoundHandler);
 app.use(errorHandler);
