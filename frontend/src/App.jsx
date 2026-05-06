@@ -1,6 +1,8 @@
 import { useState, useContext } from 'react'
 import './App.css'
 import MapComponent from './components/MapComponent/Map'
+import UserComponent from './components/UserComponent/User'
+import StatsComponent from './components/StatsComponent/Stats'
 import { BrowserRouter, Routes, Route, NavLink, useNavigate } from 'react-router-dom';
 import Auth from './components/login/Auth'
 import { AuthContext } from './context/AuthContext'
@@ -27,23 +29,8 @@ function NavBar() {
       <NavLink style={navLinkStyles} to='/map'>MAP</NavLink>
       {isLoggedIn && (
         <>
-          <button
-            onClick={handleLogout}
-            style={{
-              background: 'none',
-              border: 'none',
-              color: '#333',
-              cursor: 'pointer',
-              textDecoration: 'underline',
-              padding: '5px 10px',
-              fontSize: 'inherit',
-              fontFamily: 'inherit'
-            }}
-          >
-            sign out
-          </button>
-
-          <NavLink style={navLinkStyles} to='/user'>{username}</NavLink>
+          <NavLink style={navLinkStyles} to='/user'>Account</NavLink>
+          <NavLink style={navLinkStyles} to='/stats'>Stats</NavLink>
         </>
       )}
     </nav>
@@ -59,6 +46,8 @@ function App() {
         <Route path="/register" element={<Auth />}/>
         <Route path="/map" element={<MapComponent />}/>
         <Route path="/" element={<MapComponent />}/>
+        <Route path="/user" element={<UserComponent/>}/>
+        <Route path="/stats" element={<StatsComponent/>}/>
       </Routes>
     </BrowserRouter>
   )
