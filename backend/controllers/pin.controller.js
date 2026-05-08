@@ -1,9 +1,49 @@
 const db = require('../models');
 const Pin = db.Pin;
 
+const reverse = require("country-reverse-geocoding").country_reverse_geocoding();
+const { countries } = require("countries-list");
+
 const BackError = require('../utils/error');
 
-// CREATE PIN
+function getRegionIdFromCoordinates(latitude, longitude) {
+    const result = reverse.get_country(latitude, longitude);
+    if (!result) {
+        return -1;
+    }
+
+    const countryCode = result.country_code;
+
+    if (countryCode == "JP") {
+        return 0;
+    }
+
+    const country = countries[countryCode];
+    if (!country) {
+        return -1;
+    }
+
+    const continentCode = country.continent;
+
+    switch (continent) {
+        case "AS":
+            return 2; // rest of Asia
+        case "EU":
+            return 3; // EUROPE
+        case "NA":
+            return 4; // NORTH AMERICA
+        case "SA":
+            return 5; // SOUTH AMERICA
+        case "AF":
+            return 6; // AFRICA
+        case "OC":
+            return 7; // OCEANIA
+        case "AN":
+            return 8; // ANTARCTICA
+        default:
+            return -1;
+    }
+}
 const createPin = async (req, res, next) => {
     try {
         const {
@@ -14,10 +54,15 @@ const createPin = async (req, res, next) => {
             animeName,
             latitude,
             longitude,
-            regionId
         } = req.body;
 
         const userId = req.user?.id; // from authMiddleware
+
+        if (!latitude || !longitude) {
+            return res.status(400).json({ message: "Latitude and longitude are required" });
+        }
+
+        const regionId = getRegionIdFromCoordinates(latitude, longitude);
 
         const pin = await Pin.create({
             title,
