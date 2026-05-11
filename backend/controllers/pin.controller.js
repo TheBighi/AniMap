@@ -3,6 +3,7 @@ const Pin = db.Pin;
 
 const reverse = require("country-reverse-geocoding").country_reverse_geocoding();
 const { countries } = require("countries-list");
+const { whereAlpha3 } = require("iso-3166-1");
 
 const BackError = require('../utils/error');
 
@@ -12,7 +13,15 @@ function getRegionIdFromCoordinates(latitude, longitude) {
         return -1;
     }
 
-    const countryCode = result.country_code;
+    const threeLetterCode = result.code;
+
+    let countryCode;
+    try {
+        const countryData = whereAlpha3(threeLetterCode);
+        countryCode = countryData.alpha2;
+    } catch (e) {
+        return -1;
+    }
 
     if (countryCode == "JP") {
         return 0;
@@ -25,7 +34,7 @@ function getRegionIdFromCoordinates(latitude, longitude) {
 
     const continentCode = country.continent;
 
-    switch (continent) {
+    switch (continentCode) {
         case "AS":
             return 2; // rest of Asia
         case "EU":
