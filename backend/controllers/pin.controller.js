@@ -7,25 +7,31 @@ const { countries } = require("countries-list");
 const BackError = require('../utils/error');
 
 function getRegionIdFromCoordinates(latitude, longitude) {
-    const result = reverse.get_country(latitude, longitude);
+    const result = reverse.get_country(longitude, latitude);
+
     if (!result) {
         return -1;
     }
 
-    const countryCode = result.country_code;
+    let countryCode = result.code;
 
-    if (countryCode == "JP") {
+    if (countryCode == "JPN") {
         return 0;
+    }
+
+    if (result.code == "EST") {
+        countryCode = 'EE'
     }
 
     const country = countries[countryCode];
     if (!country) {
+        console.log('failed')
         return -1;
     }
-
+    
     const continentCode = country.continent;
 
-    switch (continent) {
+    switch (continentCode) {
         case "AS":
             return 2; // rest of Asia
         case "EU":
