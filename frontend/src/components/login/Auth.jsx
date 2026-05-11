@@ -4,7 +4,6 @@ import { AuthContext } from '../../context/AuthContext';
 
 function Auth() {
   const [isLogin, setIsLogin] = useState(true);
-  const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
@@ -19,7 +18,6 @@ function Auth() {
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setMessage('');
     try {
       const response = await fetch('http://localhost:3006/api/auth/login', {
         method: 'POST',
@@ -30,17 +28,14 @@ function Auth() {
       const data = await response.json();
       console.log('Login response:', data); // Debug log
       if (response.ok) {
-        setMessage('Login successful!');
         setLoginEmail('');
         setLoginPassword('');
-        
+
         contextLogin(data.username);
         setTimeout(() => navigate('/map'), 100); // Small delay to ensure state updates
-      } else {
-        setMessage('✗ ' + (data.message || 'Login failed'));
       }
     } catch (error) {
-      setMessage('Error: ' + error.message);
+      console.error('Login error:', error);
     }
     setLoading(false);
   };
@@ -48,7 +43,6 @@ function Auth() {
   const handleRegister = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setMessage('');
     try {
       const response = await fetch('http://localhost:3006/api/auth/register', {
         method: 'POST',
@@ -57,16 +51,13 @@ function Auth() {
         body: JSON.stringify({ username: registerUsername, email: registerEmail, password: registerPassword, confirmPassword: registerConfirmPassword })
       });
       if (response.ok) {
-        setMessage('Registration successful!');
         setRegisterUsername('');
         setRegisterEmail('');
         setRegisterPassword('');
         setRegisterConfirmPassword('');
-      } else {
-        setMessage('Registration failed');
       }
     } catch (error) {
-      setMessage('Error: ' + error.message);
+      console.error('Register error:', error);
     }
     setLoading(false);
   };
@@ -83,9 +74,8 @@ function Auth() {
               {loading ? 'Logging in...' : 'Login'}
             </button>
           </form>
-          {message && <p style={{ marginTop: '10px', padding: '8px', backgroundColor: message.includes('✓') ? '#d4edda' : '#f8d7da', color: message.includes('✓') ? '#155724' : '#721c24', borderRadius: '4px' }}>{message}</p>}
           <p>
-            Don't have an account? <button onClick={() => { setIsLogin(false); setMessage(''); }} style={{ background: 'none', border: 'none', color: '#007bff', cursor: 'pointer', textDecoration: 'underline' }}>Register</button>
+            Don't have an account? <button onClick={() => setIsLogin(false)} style={{ background: 'none', border: 'none', color: '#007bff', cursor: 'pointer', textDecoration: 'underline' }}>Register</button>
           </p>
         </>
       ) : (
@@ -100,9 +90,8 @@ function Auth() {
               {loading ? 'Registering...' : 'Register'}
             </button>
           </form>
-          {message && <p style={{ marginTop: '10px', padding: '8px', backgroundColor: message.includes('✓') ? '#d4edda' : '#f8d7da', color: message.includes('✓') ? '#155724' : '#721c24', borderRadius: '4px' }}>{message}</p>}
           <p>
-            Already have an account? <button onClick={() => { setIsLogin(true); setMessage(''); }} style={{ background: 'none', border: 'none', color: '#007bff', cursor: 'pointer', textDecoration: 'underline' }}>Login</button>
+            Already have an account? <button onClick={() => setIsLogin(true)} style={{ background: 'none', border: 'none', color: '#007bff', cursor: 'pointer', textDecoration: 'underline' }}>Login</button>
           </p>
         </>
       )}
