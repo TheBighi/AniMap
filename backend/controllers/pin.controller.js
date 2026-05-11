@@ -8,23 +8,24 @@ const { whereAlpha3 } = require("iso-3166-1");
 const BackError = require('../utils/error');
 
 function getRegionIdFromCoordinates(latitude, longitude) {
-    const result = reverse.get_country(longitude, latitude);
+    const result = reverse.get_country(latitude, longitude);
 
-    if (!result) {
+    const threeLetterCode = result.code;
+
+    let countryCode;
+    try {
+        const countryData = whereAlpha3(threeLetterCode);
+        countryCode = countryData.alpha2;
+    } catch (e) {
         return -1;
     }
 
-    const countryCode = result.country_code;
-
-    if (countryCode == "JPN") {
+    if (countryCode == "JP") {
         return 0;
     }
 
-    if (result.code == "EST") {
-        countryCode = 'EE'
-    }
-
     const country = countries[countryCode];
+
     if (!country) {
         console.log('failed')
         return -1;
