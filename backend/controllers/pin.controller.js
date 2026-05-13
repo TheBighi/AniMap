@@ -5,6 +5,7 @@ const reverse = require("country-reverse-geocoding").country_reverse_geocoding()
 const { countries } = require("countries-list");
 
 const BackError = require('../utils/error');
+const { where } = require('sequelize');
 
 function getRegionIdFromCoordinates(latitude, longitude) {
     const result = reverse.get_country(longitude, latitude);
@@ -50,6 +51,7 @@ function getRegionIdFromCoordinates(latitude, longitude) {
             return -1;
     }
 }
+
 const createPin = async (req, res, next) => {
     try {
         const {
@@ -63,6 +65,8 @@ const createPin = async (req, res, next) => {
         } = req.body;
 
         const userId = req.user?.id; // from authMiddleware
+
+        console.log(userId)
 
         if (!latitude || !longitude) {
             return res.status(400).json({ message: "Latitude and longitude are required" });
@@ -167,4 +171,22 @@ const deletePin = async (req, res, next) => {
     }
 };
 
-module.exports = { createPin, getAllPins, getPinById, updatePin, deletePin }
+
+const getPinsByUser = async (req, res, next) => {
+
+    console.log("HELLO")
+    const userId = req.user?.id;
+
+    
+
+    const pins = await Pin.findAll({
+        where: { userId: userId }
+    })
+
+    if (!pins) {
+        return res.status(404).json({message: "Pins by userId not found"})
+    }
+    return res.status(200).json({ pins: pins })
+}
+
+module.exports = { createPin, getAllPins, getPinById, updatePin, deletePin, getPinsByUser }
