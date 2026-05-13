@@ -6,6 +6,7 @@ const router = express.Router()
 
 router.post('/', authMiddleware, pinController.createPin);
 router.get('/', pinController.getAllPins);
+router.post('/userPins', authMiddleware, pinController.getPinsByUser)
 router.get('/:id', pinController.getPinById);
 router.put('/:id', authMiddleware, pinController.updatePin);
 router.delete('/:id', authMiddleware, pinController.deletePin);
