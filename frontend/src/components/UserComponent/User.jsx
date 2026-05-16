@@ -1,22 +1,44 @@
-import { useContext } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { AuthContext } from '../../context/AuthContext'
 import { BrowserRouter, Routes, Route, NavLink, useNavigate } from 'react-router-dom';
 
+const fetchUserPins = async () => {
+  const response = await fetch('http://localhost:3006/api/pins/userPins', {
+        method: 'POST',
+        credentials: 'include',
+  })
+  const data = await response.json()
+  const pins = data.pins
+  console.log(pins)
+  return pins
+}
+
+
 function User() {
     const { isLoggedIn, logout, username } = useContext(AuthContext);
+    const [pins, setPins] = useState([]);
 
     const navigate = useNavigate();
+
+    useEffect(() => {
+        const loadPins = async () => {
+          const data = await fetchUserPins();
+          setPins(data || []);
+        };
+        loadPins();
+    }, []);
+
 
     const handleLogout = () => {
         logout();
         navigate('/login');
     };
+
     return (
         <>
             {isLoggedIn && (
                 <>
                     <h1>Hi, {username}</h1>
-                    <h3>e21</h3>
                     <button
                     onClick={handleLogout}
                     style={{
@@ -32,6 +54,27 @@ function User() {
                 >
                     sign out
                 </button>
+
+                <br></br>
+
+                {pins.length === 0 && <p>No pins.</p>}
+                {pins.map((pin, index) => (
+                    <div key={pin.id}>
+                        <h2>{pin.title}</h2>
+                        <h3>{pin.animeName}</h3>
+                        <p>{pin.description}</p>
+                        <img src={pin.realImageUrl}/>
+                        <img src={pin.animeImageUrl}/>
+                    </div>
+                ))}
+
+
+
+
+
+
+
+
                 </>
                 )}
         </>

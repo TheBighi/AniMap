@@ -18,6 +18,7 @@
     "country-reverse-geocoding": "^0.2.2",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
+    "iso-3166-1": "^2.1.1",
     "jsonwebtoken": "^9.0.3",
     "multer": "^2.1.1",
     "mysql2": "^3.22.3",
