@@ -16,16 +16,33 @@ function Step2({
         }
     };
 
-    const lat = parseFloat(pinData.lat);
-    const lng = parseFloat(pinData.lng);
+    const lat = parseFloat(pinData.latitude);
+    const lng = parseFloat(pinData.longitude);
 
     const isValidCoordinates =
-        coordinateRegex.test(pinData.lat) &&
-        coordinateRegex.test(pinData.lng) &&
+        coordinateRegex.test(pinData.latitude) &&
+        coordinateRegex.test(pinData.longitude) &&
         lat > -90 &&
         lat < 90 &&
         lng > -180 &&
         lng < 180;
+
+    const hasImages = pinData.animeImage && pinData.realImage;
+
+
+  const toBase64 = (file) =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+  });
+  const handleImageChange = async (field, file) => {
+    if (!file) return;
+    const base64 = await toBase64(file);
+    setPinData({ ...pinData, [field]: base64 });
+  };
+
 
   return (
     <div className="modal-step">
@@ -35,9 +52,9 @@ function Step2({
         type="text"
         inputMode="decimal"
         placeholder="Latitude (example: 59.4370)"
-        value={pinData.lat}
+        value={pinData.latitude}
         onChange={(e) =>
-            handleCoordinateChange("lat", e.target.value)
+            handleCoordinateChange("latitude", e.target.value)
         }
       />
       <small className="coordinate-hint">
@@ -47,13 +64,32 @@ function Step2({
         type="text"
         inputMode="decimal"
         placeholder="Longitude (example: 24.7450)"
-        value={pinData.lng}
+        value={pinData.longitude}
         onChange={(e) =>
-            handleCoordinateChange("lng", e.target.value)
+            handleCoordinateChange("longitude", e.target.value)
         }
       />
       <small className="coordinate-hint">
           Enter a value from -180 to 180
+      </small>
+
+
+      <input
+        type="file"
+        accept="image/*"
+        onChange={(e) => handleImageChange("animeImage", e.target.files[0])}
+      />
+      <small className="coordinate-hint">
+          {pinData.animeImage ? "✓ Image selected" : "Upload image from the anime"}
+      </small>
+
+      <input
+        type="file"
+        accept="image/*"
+        onChange={(e) => handleImageChange("realImage", e.target.files[0])}
+      />
+      <small className="coordinate-hint">
+          {pinData.realImage ? "✓ Image selected" : "Upload image from the real location"}
       </small>
 
       <div className="modal-buttons">
@@ -63,7 +99,7 @@ function Step2({
 
         <button
           className="add-pin-submit"
-          disabled={!isValidCoordinates}
+          disabled={!isValidCoordinates || !hasImages}
           onClick={createPin}
           >
           Add Pin

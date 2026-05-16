@@ -14,18 +14,18 @@ function AddPin({ onCreatePin, defaultLat, defaultLng, isOpen: controlledIsOpen,
     title: "",
     anime: "",
     description: "",
-    lat: "",
-    lng: "",
-    animeImageUrl: "",
-    realImageUrl: "",
+    latitude: "",
+    longitude: "",
+    animeImage: "",
+    realImage: "",
   });
 
   useEffect(() => {
     if (isOpen && defaultLat !== undefined && defaultLng !== undefined) {
       setPinData((previous) => ({
         ...previous,
-        lat: String(defaultLat),
-        lng: String(defaultLng),
+        latitude: String(defaultLat),
+        longitude: String(defaultLng),
       }));
     }
   }, [defaultLat, defaultLng, isOpen]);
@@ -43,10 +43,8 @@ function AddPin({ onCreatePin, defaultLat, defaultLng, isOpen: controlledIsOpen,
         title: "",
         anime: "",
         description: "",
-        lat: "",
-        lng: "",
-        animeImageUrl: "",
-        realImageUrl: "",
+        latitude: "",
+        longitude: "",
       });
     } catch (error) {
       console.error("Pin creation failed:", error);

@@ -25,8 +25,8 @@ const fetchAllPins = async () => {
         animeName: pin.animeName,
         latitude: pin.latitude,
         longitude: pin.longitude,
-        animeImgUrl: pin.animeImageUrl,
-        IRLImgUrl: pin.realImageUrl,
+        animeImgUrl: "http://localhost:3006" + pin.animeImageUrl,
+        IRLImgUrl: "http://localhost:3006" + pin.realImageUrl,
         createdAt: pin.createdAt,
       },
     })),
@@ -132,11 +132,11 @@ function MapComponent() {
     const body = {
       title: pinData.title,
       description: pinData.description,
-      realImageUrl: pinData.realImageUrl,
-      animeImageUrl: pinData.animeImageUrl,
-      animeName: pinData.anime,
-      latitude: parseFloat(pinData.lat),
-      longitude: parseFloat(pinData.lng),
+      realImage: pinData.realImage,
+      animeImage: pinData.animeImage,
+      anime: pinData.anime,
+      latitude: parseFloat(pinData.latitude),
+      longitude: parseFloat(pinData.longitude),
     };
 
     const res = await fetch("http://localhost:3006/api/pins", {
@@ -174,8 +174,8 @@ function MapComponent() {
         animeName: pin.animeName,
         latitude: pin.latitude,
         longitude: pin.longitude,
-        animeImgUrl: pin.animeImageUrl,
-        IRLImgUrl: pin.realImageUrl,
+        animeImgUrl: "http://localhost:3006" + pin.animeImageUrl,
+        IRLImgUrl: "http://localhost:3006" + pin.realImageUrl,
         createdAt: pin.createdAt,
       },
     };
