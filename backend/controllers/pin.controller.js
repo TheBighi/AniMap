@@ -1,6 +1,10 @@
 const db = require('../models');
 const Pin = db.Pin;
 
+const fs = require('fs').promises;
+const path = require("path");
+const crypto = require("crypto");
+
 const reverse = require("country-reverse-geocoding").country_reverse_geocoding();
 const { countries } = require("countries-list");
 const { whereAlpha3 } = require("iso-3166-1");
@@ -59,9 +63,7 @@ const createPin = async (req, res, next) => {
         const {
             title,
             description,
-            realImageUrl,
-            animeImageUrl,
-            animeName,
+            anime: animeName,
             latitude,
             longitude,
         } = req.body;
@@ -76,12 +78,23 @@ const createPin = async (req, res, next) => {
 
         const regionId = getRegionIdFromCoordinates(latitude, longitude);
 
+        const uploadsDir = path.join(__dirname, "../uploads");
+        await fs.mkdir(uploadsDir, { recursive: true });
+
+        const uniqueId = crypto.randomBytes(6).toString("hex");
+
+        const savedRealPath  = await saveBase64Image(req.body.realImage,  path.join(uploadsDir, `${uniqueId}IRL`));
+        const savedAnimePath = await saveBase64Image(req.body.animeImage, path.join(uploadsDir, `${uniqueId}ANIME`));
+
+        const realImageStored  = `/uploads/${path.basename(savedRealPath)}`;
+        const animeImageStored = `/uploads/${path.basename(savedAnimePath)}`;
+
         const pin = await Pin.create({
             title,
             description,
-            realImageUrl,
-            animeImageUrl,
-            animeName,
+            realImageUrl: realImageStored,
+            animeImageUrl: animeImageStored,
+            animeName,  
             latitude,
             longitude,
             regionId,
