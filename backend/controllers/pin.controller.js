@@ -51,7 +51,7 @@ function getRegionIdFromCoordinates(latitude, longitude) {
         case "AN":
             return 8; // ANTARCTICA
         default:
-            return -1;
+            return -1; // UNKOWN
     }
 }
 
