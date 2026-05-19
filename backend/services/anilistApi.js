@@ -1,3 +1,7 @@
+const BackError = require('../utils/error');
+
+const url = 'https://graphql.anilist.co';
+
 const query = `
 query ($id: Int, $page: Int, $perPage: Int, $search: String, $isAdult: Boolean, $genre: String) {
     Page (page: $page, perPage: $perPage) {
@@ -10,6 +14,7 @@ query ($id: Int, $page: Int, $perPage: Int, $search: String, $isAdult: Boolean, 
             id
             title {
                 english
+                romaji
             }
             genres
             isAdult
@@ -18,15 +23,16 @@ query ($id: Int, $page: Int, $perPage: Int, $search: String, $isAdult: Boolean, 
 }
 `;
 
-const variables = {
-    search: 'lain',
-    isAdult: false
-};
 
-const url = 'https://graphql.anilist.co';
-
-async function fetchAnimeData() {
+const fetchAnimeData= async (req, res, next) => {
     try {
+        const search = req.body.search
+
+        const variables = {
+            search: search,
+            isAdult: false
+        };
+
         const response = await fetch(url, {
             method: 'POST',
             headers: {
@@ -40,11 +46,14 @@ async function fetchAnimeData() {
         });
 
         const data = await response.json();
-        console.log(JSON.stringify(data, null, 2));
-    } catch (error) {
-        console.error(error);
-    }
-}
+        const animes = data.data.Page.media
+        const names = animes.map(a => a.title.english || a.title.romaji);
 
-// Execute the function
-fetchAnimeData();
+        res.status(201).json({animes: names})
+
+    } catch (err) {
+        next(new BackError(500, err, "INTERNAL_SERVER_ERROR"))
+    }
+};
+
+module.exports = {fetchAnimeData}
