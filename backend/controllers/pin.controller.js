@@ -12,6 +12,15 @@ const { whereAlpha3 } = require("iso-3166-1");
 const BackError = require('../utils/error');
 const { where } = require('sequelize');
 
+const saveBase64Image = async (imageUrl, destPathWithoutExt) => {
+    const mimeType = imageUrl.split(";")[0].split(":")[1];
+    const ext = mimeType.split("/")[1];
+    const destPath = `${destPathWithoutExt}.${ext}`;
+    const base64Data = imageUrl.split(",")[1];
+    await fs.writeFile(destPath, base64Data, "base64");
+    return destPath;
+};
+
 function getRegionIdFromCoordinates(latitude, longitude) {
     const result = reverse.get_country(latitude, longitude);
 
