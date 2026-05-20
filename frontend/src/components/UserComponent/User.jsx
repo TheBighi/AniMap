@@ -1,6 +1,7 @@
 import { useContext, useEffect, useState } from 'react';
 import { AuthContext } from '../../context/AuthContext'
 import { BrowserRouter, Routes, Route, NavLink, useNavigate } from 'react-router-dom';
+import './User.css';
 
 const fetchUserPins = async () => {
   const response = await fetch('http://localhost:3006/api/pins/userPins', {
@@ -63,8 +64,8 @@ function User() {
                         <h2>{pin.title}</h2>
                         <h3>{pin.animeName}</h3>
                         <p>{pin.description}</p>
-                        <img src={pin.realImageUrl}/>
-                        <img src={pin.animeImageUrl}/>
+                        <img className="limited-photo" src={`http://localhost:3006${pin.realImageUrl}`} />
+                        <img className="limited-photo" src={`http://localhost:3006${pin.animeImageUrl}`} />
                     </div>
                 ))}
 
