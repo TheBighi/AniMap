@@ -2,6 +2,8 @@ const BackError = require('../utils/error');
 
 const url = 'https://graphql.anilist.co';
 
+const cache = new Map();
+
 const query = `
 query ($id: Int, $page: Int, $perPage: Int, $search: String, $isAdult: Boolean, $genre: String) {
     Page (page: $page, perPage: $perPage) {
@@ -25,6 +27,12 @@ query ($id: Int, $page: Int, $perPage: Int, $search: String, $isAdult: Boolean, 
 
 const fetchAnimeData = async (queryVar) => {
     try {
+        const key = queryVar?.toLowerCase().trim();
+
+        if (cache.has(key)) {
+            return cache.get(key);
+        }
+
         const variables = {
             search: queryVar,
             isAdult: false
@@ -45,6 +53,8 @@ const fetchAnimeData = async (queryVar) => {
         const data = await response.json();
         const animes = data.data.Page.media;
         const names = animes.map(a => a.title.english || a.title.romaji);
+
+        cache.set(key, names);
 
         return names;
 

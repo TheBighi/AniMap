@@ -85,6 +85,7 @@ const createPin = async (req, res, next) => {
 
         const animes = await searchService.fetchAnimeData(animeName);
         
+        console.log(animes)
         if (!animes.includes(animeName)) {
             return res.status(400).json({ message: "Anime not found in Anilist", animes });
         }
