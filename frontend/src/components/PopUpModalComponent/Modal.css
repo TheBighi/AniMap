@@ -98,3 +98,51 @@
   font-size: 15px;
   color: rgb(63, 63, 63);
 }
+
+.anime-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  max-height: 200px;
+  overflow-y: auto;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  z-index: 999;
+}
+
+.anime-dropdown li {
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.anime-dropdown li:hover {
+  background: #f0f0f0;
+}
+
+.dropdown-loading,
+.dropdown-empty {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  padding: 8px 12px;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  color: #888;
+  font-size: 0.9em;
+}
+
+.modal-step .anime-input-wrapper {
+  width: 100%;
+}
+
+.modal-step .anime-input-wrapper input {
+  width: 100%;
+  box-sizing: border-box;
+}

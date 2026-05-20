@@ -4,6 +4,6 @@ const authMiddleware = require('../middleware/authMiddleware');
 
 const router = express.Router()
 
-router.post('/', authMiddleware, searchService.fetchAnimeData)
+router.get('/', searchService.animeService)
 
 module.exports = router

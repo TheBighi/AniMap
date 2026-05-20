@@ -23,13 +23,10 @@ query ($id: Int, $page: Int, $perPage: Int, $search: String, $isAdult: Boolean, 
 }
 `;
 
-
-const fetchAnimeData= async (req, res, next) => {
+const fetchAnimeData = async (queryVar) => {
     try {
-        const search = req.body.search
-
         const variables = {
-            search: search,
+            search: queryVar,
             isAdult: false
         };
 
@@ -46,14 +43,26 @@ const fetchAnimeData= async (req, res, next) => {
         });
 
         const data = await response.json();
-        const animes = data.data.Page.media
+        const animes = data.data.Page.media;
         const names = animes.map(a => a.title.english || a.title.romaji);
 
-        res.status(201).json({animes: names})
+        return names;
 
     } catch (err) {
-        next(new BackError(500, err, "INTERNAL_SERVER_ERROR"))
+        throw new BackError(500, err.message, "INTERNAL_SERVER_ERROR"); // ✅ err.message
     }
 };
 
-module.exports = {fetchAnimeData}
+const animeService = async (req, res, next) => {
+    try {
+        const search = req.query.search;
+        const animes = await fetchAnimeData(search);
+
+        res.status(200).json({ animes });
+
+    } catch (err) {
+        next(new BackError(500, err.message, "INTERNAL_SERVER_ERROR"));
+    }
+};
+
+module.exports = { fetchAnimeData, animeService };

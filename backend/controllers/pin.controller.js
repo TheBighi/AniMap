@@ -12,6 +12,8 @@ const { whereAlpha3 } = require("iso-3166-1");
 const BackError = require('../utils/error');
 const { where } = require('sequelize');
 
+const searchService = require('../services/anilistApi.js')
+
 const saveBase64Image = async (imageUrl, destPathWithoutExt) => {
     const mimeType = imageUrl.split(";")[0].split(":")[1];
     const ext = mimeType.split("/")[1];
@@ -80,6 +82,12 @@ const createPin = async (req, res, next) => {
         const userId = req.user?.id; // from authMiddleware
 
         console.log(userId)
+
+        const animes = await searchService.fetchAnimeData(animeName);
+        
+        if (!animes.includes(animeName)) {
+            return res.status(400).json({ message: "Anime not found in Anilist", animes });
+        }
 
         if (!latitude || !longitude) {
             return res.status(400).json({ message: "Latitude and longitude are required" });
