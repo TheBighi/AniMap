@@ -30,10 +30,12 @@ sequelize.authenticate()
 
 const authRoutes = require('./routes/auth.routes')
 const pinRoutes = require('./routes/pin.routes');
+const animeRoutes = require('./routes/anime.routes')
 
 app.use('/api/auth', authRoutes)
 app.use('/api/pins', pinRoutes);
 app.use('/uploads', express.static('uploads'));
+app.use('/api/anime', animeRoutes)
 
 app.use(notFoundHandler);
 app.use(errorHandler);
