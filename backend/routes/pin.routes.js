@@ -10,7 +10,5 @@ router.post('/userPins', authMiddleware, pinController.getPinsByUser)
 router.get('/:id', pinController.getPinById);
 router.put('/:id', authMiddleware, pinController.updatePin);
 router.delete('/:id', authMiddleware, pinController.deletePin);
-router.get('/top/animes', pinController.getTopAnimes)
-router.get('/top/regions', pinController.getAnimeCountByRegion)
 
 module.exports = router

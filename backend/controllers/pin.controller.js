@@ -261,6 +261,8 @@ const getAnimeCountByRegion = async (req, res, next) => {
             nest: true
         });
 
+        console.log(animeCountByRegion)
+
         res.status(200).json({ animeCountByRegion });
     } catch (err) {
         next(new BackError(500, err, "ANIME_COUNT_FETCH_ERROR"));
