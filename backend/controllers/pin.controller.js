@@ -1,5 +1,6 @@
 const db = require('../models');
 const Pin = db.Pin;
+const Region = db.Region;
 
 const fs = require('fs').promises;
 const path = require("path");
@@ -37,7 +38,7 @@ function getRegionIdFromCoordinates(latitude, longitude) {
     }
 
     if (countryCode == "JP") {
-        return 0;
+        return 1;
     }
 
     const country = countries[countryCode];
@@ -118,6 +119,8 @@ const createPin = async (req, res, next) => {
             regionId,
             userId
         });
+
+        console.log(pin)
 
         res.status(201).json({
             message: "Pin created successfully",
@@ -222,4 +225,48 @@ const getPinsByUser = async (req, res, next) => {
     return res.status(200).json({ pins: pins })
 }
 
-module.exports = { createPin, getAllPins, getPinById, updatePin, deletePin, getPinsByUser }
+const getTopAnimes = async (req, res, next) => {
+    const limit = 10 // for now
+    try {
+        const topAnimes = await Pin.findAll({
+            attributes: ['animeName', [db.Sequelize.fn('COUNT', db.Sequelize.col('animeName')), 'count']],
+            group: ['animeName'],
+            order: [[db.Sequelize.literal('count'), 'DESC']],
+            limit: 10
+        });
+
+        res.status(200).json({ topAnimes });
+    } catch (err) {
+        next(new BackError(500, err, "TOP_ANIMES_FETCH_ERROR"));
+    }
+}
+
+const getAnimeCountByRegion = async (req, res, next) => {
+    try {
+        const animeCountByRegion = await Pin.findAll({
+            attributes: [
+                'regionId',
+                [db.Sequelize.fn('COUNT', db.Sequelize.col('Pin.animeName')), 'count']
+            ],
+            include: [
+                {
+                    model: Region,
+                    attributes: ['name'],
+                    required: true
+                }
+            ],
+            group: ['Pin.regionId', 'Region.id', 'Region.name'],
+            order: [[db.Sequelize.literal('count'), 'DESC']],
+            raw: true,
+            nest: true
+        });
+
+        console.log(animeCountByRegion)
+
+        res.status(200).json({ animeCountByRegion });
+    } catch (err) {
+        next(new BackError(500, err, "ANIME_COUNT_FETCH_ERROR"));
+    }
+};
+
+module.exports = { createPin, getAllPins, getPinById, updatePin, deletePin, getPinsByUser, getTopAnimes, getAnimeCountByRegion };
