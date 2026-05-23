@@ -1,0 +1,31 @@
+.header {
+  display: flex;
+  padding-left: 0;
+  padding-right: 3vw;
+  align-items: center;
+  margin-top: 20px;
+  align-items: center;
+}
+
+.nav {
+  display: flex;
+  gap: clamp(12px, 2vw, 40px);
+  margin-top: 15px;
+  margin-left: auto;
+}
+
+.nav a {
+  text-decoration: none;
+  color: black;
+  font-size: clamp(16px, 1.8vw, 26px);
+  font-weight: 400;
+  transition: 0.2s;
+}
+
+.activeNav {
+  font-weight: 600 !important;
+}
+
+.nav a:hover {
+  opacity: 0.8;
+}
