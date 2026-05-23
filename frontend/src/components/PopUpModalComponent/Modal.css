@@ -1,7 +1,7 @@
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.5);
+  background: rgba(0, 0, 0, 0.5);
 
   display: flex;
   justify-content: center;
@@ -145,4 +145,64 @@
 .modal-step .anime-input-wrapper input {
   width: 100%;
   box-sizing: border-box;
+}
+
+.modal-box.delete-confirm {
+  width: 500px;
+  text-align: center;
+}
+
+.modal-box.delete-confirm h2 {
+  color: #d32f2f;
+  font-weight: bold;
+  font-size: 30px;
+  margin: 0;
+}
+
+.modal-box.delete-confirm p {
+  margin: 10px 0;
+  color: #333;
+  font-size: 20px;
+}
+
+.pin-title-confirmation {
+  font-weight: bold;
+  color: #555;
+  font-size: 18px;
+}
+
+.delete-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.cancel-button,
+.delete-button-confirm {
+  padding: 12px 30px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.cancel-button {
+  background: #6d889b;
+  color: white;
+}
+
+.cancel-button:hover {
+  background: #555;
+}
+
+.delete-button-confirm {
+  background: #d32f2f;
+  color: white;
+}
+
+.delete-button-confirm:hover {
+  background: #b71c1c;
 }

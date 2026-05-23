@@ -1,6 +1,8 @@
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import { BrowserRouter, Routes, Route, NavLink, useNavigate } from "react-router-dom";
+import EditPin from "../PopUpModalComponent/EditPin";
+import DeleteConfirm from "../PopUpModalComponent/DeleteConfirm";
 import "./User.css";
 
 const fetchUserPins = async () => {
@@ -17,6 +19,10 @@ function User() {
   const { username, logout } = useContext(AuthContext);
 
   const [pins, setPins] = useState([]);
+  const [editingPin, setEditingPin] = useState(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [deletingPin, setDeletingPin] = useState(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const navigate = useNavigate();
 
@@ -32,6 +38,71 @@ function User() {
   const handleLogout = () => {
     logout();
     navigate("/login");
+  };
+
+  const handleEditClick = (pin) => {
+    setEditingPin(pin);
+    setIsEditModalOpen(true);
+  };
+
+  const handleDeleteClick = (pin) => {
+    setDeletingPin(pin);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleUpdatePin = async (pinId, pinData) => {
+    try {
+      const response = await fetch(`http://localhost:3006/api/pins/${pinId}`, {
+        method: "PUT",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          title: pinData.title,
+          animeName: pinData.anime,
+          description: pinData.description,
+          latitude: parseFloat(pinData.latitude),
+          longitude: parseFloat(pinData.longitude),
+          animeImage: pinData.animeImage,
+          realImage: pinData.realImage,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to update pin");
+      }
+
+      const data = await fetchUserPins();
+      setPins(data || []);
+      setIsEditModalOpen(false);
+    } catch (error) {
+      console.error("Error updating pin:", error);
+      throw error;
+    }
+  };
+
+  const handleDeletePin = async () => {
+    try {
+      const response = await fetch(
+        `http://localhost:3006/api/pins/${deletingPin.id}`,
+        {
+          method: "DELETE",
+          credentials: "include",
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to delete pin");
+      }
+
+      setPins(pins.filter((p) => p.id !== deletingPin.id));
+      setIsDeleteModalOpen(false);
+      setDeletingPin(null);
+    } catch (error) {
+      console.error("Error deleting pin:", error);
+      alert("Failed to delete pin. Please try again.");
+    }
   };
 
   return (
@@ -85,14 +156,36 @@ function User() {
               {/* RIGHT */}
 
               <div className="actionsColumn">
-                <button className="actionButton editButton">Edit</button>
+                <button
+                  className="actionButton editButton"
+                  onClick={() => handleEditClick(pin)}>
+                  Edit
+                </button>
 
-                <button className="actionButton deleteButton">Delete</button>
+                <button
+                  className="actionButton deleteButton"
+                  onClick={() => handleDeleteClick(pin)}>
+                  Delete
+                </button>
               </div>
             </div>
           ))}
         </section>
       </main>
+
+      <EditPin
+        pin={editingPin}
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        onUpdatePin={handleUpdatePin}
+      />
+
+      <DeleteConfirm
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onDelete={handleDeletePin}
+        pinTitle={deletingPin?.title || ""}
+      />
     </div>
   );
 }

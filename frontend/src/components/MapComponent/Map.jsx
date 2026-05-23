@@ -59,6 +59,7 @@ function MapComponent() {
     const map = new mapboxgl.Map({
       container: mapContainer.current,
       style: "mapbox://styles/mapbox/dark-v10",
+      projection: "globe",
       center: [139.6917, 35.6895],
       zoom: 3,
     });

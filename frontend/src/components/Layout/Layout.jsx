@@ -14,6 +14,13 @@ function Layout() {
         <main className="pageContent">
           <Outlet />
         </main>
+
+        <footer className="appFooter">
+          <div className="footerContent">
+            <span>© 2026 AniMap</span>
+            <span>Manage your anime location pins with ease.</span>
+          </div>
+        </footer>
       </div>
     </div>
   );

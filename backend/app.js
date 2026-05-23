@@ -1,45 +1,46 @@
-const express = require('express')
-const cookieParser = require('cookie-parser');
+const express = require("express");
+const cookieParser = require("cookie-parser");
 
 const { notFoundHandler, errorHandler } = require("./middleware/globalErrorHandler");
-const authMiddleware = require('./middleware/authMiddleware');
+const authMiddleware = require("./middleware/authMiddleware");
 
-const sequelize = require('./utils/db')
+const sequelize = require("./utils/db");
 
-const app = express()
-const cors = require('cors');
+const app = express();
+const cors = require("cors");
 
-app.use(express.json({ limit: '50mb' }))
-app.use(cookieParser())
+app.use(express.json({ limit: "50mb" }));
+app.use(cookieParser());
 
 const corsOptions = {
-    origin: 'http://localhost:5173',
-    methods: 'GET,POST,OPTIONS',
-    credentials: true,
-}
+  origin: "http://localhost:5173",
+  methods: "GET,POST,PUT,DELETE,OPTIONS",
+  credentials: true,
+};
 
-app.use(cors(corsOptions))
+app.use(cors(corsOptions));
 
-sequelize.authenticate()
-    .then(() => {
-        console.log('Connection established')
-    })
-    .catch((error) => {
-        console.log(error)
-    })
+sequelize
+  .authenticate()
+  .then(() => {
+    console.log("Connection established");
+  })
+  .catch((error) => {
+    console.log(error);
+  });
 
-const authRoutes = require('./routes/auth.routes')
-const pinRoutes = require('./routes/pin.routes');
-const animeRoutes = require('./routes/anime.routes')
-const statsRoutes = require('./routes/stats.routes')
+const authRoutes = require("./routes/auth.routes");
+const pinRoutes = require("./routes/pin.routes");
+const animeRoutes = require("./routes/anime.routes");
+const statsRoutes = require("./routes/stats.routes");
 
-app.use('/api/auth', authRoutes)
-app.use('/api/pins', pinRoutes);
-app.use('/uploads', express.static('uploads'));
-app.use('/api/anime', animeRoutes)
-app.use('/api/stats', statsRoutes)
+app.use("/api/auth", authRoutes);
+app.use("/api/pins", pinRoutes);
+app.use("/uploads", express.static("uploads"));
+app.use("/api/anime", animeRoutes);
+app.use("/api/stats", statsRoutes);
 
 app.use(notFoundHandler);
 app.use(errorHandler);
 
-module.exports = app
+module.exports = app;
