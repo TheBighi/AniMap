@@ -1,5 +1,5 @@
 .userPage {
-  min-height: 100vh;
+  min-height: 120vh;
   width: 100%;
 
   display: flex;
@@ -150,8 +150,8 @@
 
 .previewImage {
   min-width: 240px;
-  max-width: 420px;
-  height: 220px;
+  max-width: 620px;
+  height: 320px;
   object-fit: cover;
   border-radius: 24px;
   background: #d9d9d9;
@@ -250,4 +250,14 @@
   .previewImage {
     max-width: 100%;
   }
+}
+
+.emptyPins {
+  width: 100%;
+  padding: 80px 40px;
+  background: #e3dcd7;
+  text-align: center;
+  font-size: clamp(24px, 2vw, 40px);
+  font-weight: 700;
+  color: #555;
 }

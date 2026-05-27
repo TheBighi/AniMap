@@ -127,49 +127,55 @@ function User() {
         {/* CARDS */}
 
         <section className="cardsWrapper">
-          {pins.map((pin) => (
-            <div className="pinCard" key={pin.id}>
-              {/* LEFT */}
+          {pins.length === 0 ? (
+            <div className="emptyPins">You don’t have any pins yet.</div>
+          ) : (
+            pins.map((pin) => (
+              <div className="pinCard" key={pin.id}>
+                {/* LEFT */}
 
-              <div className="cardPanel">
-                <h2 className="cardTitle">{pin.title}</h2>
+                <div className="cardPanel">
+                  <h2 className="cardTitle">{pin.title}</h2>
 
-                <h3 className="cardAnime">{pin.animeName}</h3>
+                  <h3 className="cardAnime">{pin.animeName}</h3>
 
-                <p className="cardDescription">{pin.description}</p>
+                  <p className="cardDescription">{pin.description}</p>
 
-                <div className="imagesRow">
-                  <img
-                    className="previewImage"
-                    src={`http://localhost:3006${pin.realImageUrl}`}
-                    alt="real"
-                  />
+                  <div className="imagesRow">
+                    <img
+                      className="previewImage"
+                      src={`http://localhost:3006${pin.realImageUrl}`}
+                      alt="real"
+                    />
 
-                  <img
-                    className="previewImage"
-                    src={`http://localhost:3006${pin.animeImageUrl}`}
-                    alt="anime"
-                  />
+                    <img
+                      className="previewImage"
+                      src={`http://localhost:3006${pin.animeImageUrl}`}
+                      alt="anime"
+                    />
+                  </div>
+                </div>
+
+                {/* RIGHT */}
+
+                <div className="actionsColumn">
+                  <button
+                    className="actionButton editButton"
+                    onClick={() => handleEditClick(pin)}
+                  >
+                    Edit
+                  </button>
+
+                  <button
+                    className="actionButton deleteButton"
+                    onClick={() => handleDeleteClick(pin)}
+                  >
+                    Delete
+                  </button>
                 </div>
               </div>
-
-              {/* RIGHT */}
-
-              <div className="actionsColumn">
-                <button
-                  className="actionButton editButton"
-                  onClick={() => handleEditClick(pin)}>
-                  Edit
-                </button>
-
-                <button
-                  className="actionButton deleteButton"
-                  onClick={() => handleDeleteClick(pin)}>
-                  Delete
-                </button>
-              </div>
-            </div>
-          ))}
+            ))
+          )}
         </section>
       </main>
 
