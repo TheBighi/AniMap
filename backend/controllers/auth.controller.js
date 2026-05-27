@@ -93,4 +93,20 @@ const login = async (req, res, next) => {
     }
 }
 
-module.exports = { healthCheck, register, login };
+const me = async (req, res, next) => {
+    try {
+        const user = await User.findByPk(req.user.id, {
+            attributes: ['username', 'email']
+        });
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        res.json({ username: user.username, email: user.email });
+    } catch (err) {
+        next(new BackError(500, err, "INTERNAL_SERVER_ERROR"));
+    }
+}
+
+module.exports = { healthCheck, register, login, me };
