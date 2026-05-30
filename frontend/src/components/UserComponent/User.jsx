@@ -28,6 +28,9 @@ function User() {
 
   const navigate = useNavigate();
 
+  const [search, setSearch] = useState("");
+  const [sort, setSort] = useState("newest"); // newest | oldest | az
+
   useEffect(() => {
     const loadPins = async () => {
       const data = await fetchUserPins();
@@ -107,6 +110,26 @@ function User() {
     }
   };
 
+  const filteredPins = pins
+    .filter((pin) => {
+      const searchLower = search.toLowerCase();
+      return (
+        pin.title.toLowerCase().includes(searchLower) ||
+        pin.animeName.toLowerCase().includes(searchLower) ||
+        pin.description.toLowerCase().includes(searchLower)
+      );
+    })
+    .sort((a, b) => {
+      if (sort === "newest") {
+        return new Date(b.createdAt) - new Date(a.createdAt);
+      } else if (sort === "oldest") {
+        return new Date(a.createdAt) - new Date(b.createdAt);
+      } else if (sort === "az") {
+        return a.title.localeCompare(b.title);
+      }
+      return 0;
+    });
+
   return (
     <div className="userPage">
       {/* MAIN */}
@@ -126,13 +149,46 @@ function User() {
           </button>
         </section>
 
+        {/* MINI STATS */}
+
+        <section className="statsRow">
+          <div className="statCard">
+            <div className="statNumber">{pins.length}</div>
+            <div className="statLabel">Pins</div>
+          </div>
+
+          <div className="statCard">
+            <div className="statNumber">
+              {new Set(pins.map(p => p.animeName)).size}
+            </div>
+            <div className="statLabel">Animes</div>
+          </div>
+        </section>
+
+          {/* FILTERS */}
+
+        <section className="filtersBar">
+          <input className="searchInput"
+            type="text"
+            placeholder="Search pins..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+          <select className="sortSelect" value={sort} onChange={(e) => setSort(e.target.value)}>
+            <option value="newest">Newest</option>
+            <option value="oldest">Oldest</option>
+            <option value="az">A-Z</option>
+          </select>
+        </section>
+
+
         {/* CARDS */}
 
         <section className="cardsWrapper">
           {pins.length === 0 ? (
             <div className="emptyPins">You don’t have any pins yet.</div>
           ) : (
-            pins.map((pin) => (
+            filteredPins.map((pin) => (
               <div className="pinCard" key={pin.id}>
                 {/* LEFT */}
 
