@@ -73,3 +73,10 @@
   cursor: pointer;
   text-decoration: underline;
 }
+
+.auth-error {
+  color: #c15959;
+  margin-top: -8px;
+  margin-bottom: 10px;
+  font-size: 14px;
+}

@@ -24,7 +24,11 @@ const healthCheck = async (req, res, next) => {
 
 const register = async (req, res, next) => {
     try {
-        const { username, email, password } = req.body
+        const { username, email, password, confirmPassword } = req.body;
+
+        if (password !== confirmPassword) {
+            return res.status(400).json({ msg: 'Passwords do not match' });
+        }
 
         let user = await User.findOne({
             where: { email: email}

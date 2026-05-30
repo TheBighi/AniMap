@@ -12,13 +12,19 @@ function Auth() {
   const [registerEmail, setRegisterEmail] = useState("");
   const [registerPassword, setRegisterPassword] = useState("");
   const [registerConfirmPassword, setRegisterConfirmPassword] = useState("");
+  const [error, setError] = useState("");
 
   const navigate = useNavigate();
   const { login: contextLogin } = useContext(AuthContext);
 
+  const isValidEmail = (email) => {
+    return email.includes("@") && email.includes(".");
+  };
+
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setError("");
 
     try {
       const response = await fetch("http://localhost:3006/api/auth/login", {
@@ -36,6 +42,8 @@ function Auth() {
 
         contextLogin(data.username);
         setTimeout(() => navigate("/map"), 100);
+      } else {
+        setError(data.message || "Invalid email or password");
       }
     } catch (error) {
       console.error("Login error:", error);
@@ -46,6 +54,18 @@ function Auth() {
 
   const handleRegister = async (e) => {
     e.preventDefault();
+
+    if (!isValidEmail(registerEmail)) {
+      setError("Email must contain @ and .");
+      return;
+    }
+
+    if (registerPassword !== registerConfirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
+    setError("");
+
     setLoading(true);
 
     try {
@@ -99,7 +119,7 @@ function Auth() {
               onChange={(e) => setLoginPassword(e.target.value)}
               required
             />
-
+            {error && <p className="auth-error">{error}</p>}
             <button
               type="submit"
               disabled={loading}
@@ -151,7 +171,7 @@ function Auth() {
               onChange={(e) => setRegisterConfirmPassword(e.target.value)}
               required
             />
-
+            {error && <p className="auth-error">{error}</p>}
             <button
               type="submit"
               disabled={loading}
