@@ -6,9 +6,9 @@ import { AuthContext } from "../../context/AuthContext";
 import AddPin from "../PopUpModalComponent/AddPin";
 
 const fetchAllPins = async () => {
-  const response = await fetch('http://localhost:3006/api/pins')
-  const data = await response.json()
-  const pins = data.pins
+  const response = await fetch("http://localhost:3006/api/pins");
+  const data = await response.json();
+  const pins = data.pins;
 
   return {
     type: "FeatureCollection",
@@ -30,8 +30,8 @@ const fetchAllPins = async () => {
         createdAt: pin.createdAt,
       },
     })),
-  }
-}
+  };
+};
 
 mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN;
 
@@ -59,6 +59,7 @@ function MapComponent() {
     const map = new mapboxgl.Map({
       container: mapContainer.current,
       style: "mapbox://styles/mapbox/dark-v10",
+      projection: "globe",
       center: [139.6917, 35.6895],
       zoom: 3,
     });
@@ -195,9 +196,23 @@ function MapComponent() {
   };
 
   return (
-    <div style={{ width: "100%", height: "100vh", position: "relative" }}>
-      <AddPin onCreatePin={handleCreatePin} />
-      <div ref={mapContainer} style={{ width: "100%", height: "100%" }} />
+    <div>
+      {/* MAIN */}
+
+      <main className="mainContent">
+        {/* TITLE */}
+        <section className="titleSection">
+          <div className="titleBar"></div>
+
+          <h1 className="pageTitle">MAP</h1>
+        </section>
+
+        {/* MAP */}
+        <div style={{ width: "100%", height: "100vh", position: "relative" }}>
+          <AddPin onCreatePin={handleCreatePin} />
+          <div ref={mapContainer} style={{ width: "100%", height: "100%" }} />
+        </div>
+      </main>
     </div>
   );
 }

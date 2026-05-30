@@ -8,34 +8,49 @@ export const AuthProvider = ({ children }) => {
 
   // check if user is logged in on mount (from localStorage)
   useEffect(() => {
-    const storedUsername = localStorage.getItem('username');
-    console.log('AuthProvider mount - checking localStorage:', storedUsername);
-    if (storedUsername) {
-      setUsername(storedUsername);
-      setIsLoggedIn(true);
-    }
+    const checkAuth = async () => {
+      try {
+        const response = await fetch("http://localhost:3006/api/auth/me", {
+          method: "GET",
+          credentials: "include",
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+
+          setUsername(data.username);
+          setIsLoggedIn(true);
+
+          localStorage.setItem("username", data.username);
+        } else {
+          logout();
+        }
+      } catch (error) {
+        console.error("Auth check error:", error);
+        logout();
+      }
+    };
+
+    checkAuth();
   }, []);
 
   const login = useCallback((user) => {
     setUsername(user);
     setIsLoggedIn(true);
-    localStorage.setItem('username', user);
+    localStorage.setItem("username", user);
   }, []);
 
   const logout = useCallback(() => {
     setUsername(null);
     setIsLoggedIn(false);
-    localStorage.removeItem('username');
+    localStorage.removeItem("username");
   }, []);
 
-  const value = useMemo(() => ({ isLoggedIn, username, login, logout }), [isLoggedIn, username, login, logout]);
-  console.log('AuthContext value:', value);
-
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
+  const value = useMemo(
+    () => ({ isLoggedIn, username, login, logout }),
+    [isLoggedIn, username, login, logout],
   );
+  console.log("AuthContext value:", value);
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
-
-

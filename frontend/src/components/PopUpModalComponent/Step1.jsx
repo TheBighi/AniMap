@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 
-function Step1({ pinData, setPinData, nextStep, closeModal }) {
+function Step1({ pinData, setPinData, nextStep, closeModal, isEditing = false }) {
   const [query, setQuery] = useState(pinData.anime || "");
   const [results, setResults] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -24,7 +24,9 @@ function Step1({ pinData, setPinData, nextStep, closeModal }) {
     debounceRef.current = setTimeout(async () => {
       setIsLoading(true);
       try {
-        const res = await fetch(`http://localhost:3006/api/anime?search=${encodeURIComponent(value)}`);
+        const res = await fetch(
+          `http://localhost:3006/api/anime?search=${encodeURIComponent(value)}`,
+        );
         const data = await res.json();
         setResults(data.animes || []);
         setShowDropdown(true);
@@ -55,7 +57,7 @@ function Step1({ pinData, setPinData, nextStep, closeModal }) {
 
   return (
     <div className="modal-step">
-      <h2>Create Pin</h2>
+      <h2>{isEditing ? "Edit Pin" : "Create Pin"}</h2>
 
       <input
         placeholder="Title"
@@ -68,7 +70,11 @@ function Step1({ pinData, setPinData, nextStep, closeModal }) {
         }
       />
 
-      <div ref={wrapperRef} className="anime-input-wrapper" style={{ position: "relative" }}>
+      <div
+        ref={wrapperRef}
+        className="anime-input-wrapper"
+        style={{ position: "relative" }}
+      >
         <input
           placeholder="Anime Name"
           value={query}
@@ -92,7 +98,7 @@ function Step1({ pinData, setPinData, nextStep, closeModal }) {
           <div className="dropdown-empty">No results found</div>
         )}
       </div>
-      
+
       <textarea
         placeholder="Description"
         value={pinData.description}
@@ -104,18 +110,11 @@ function Step1({ pinData, setPinData, nextStep, closeModal }) {
         }
       />
 
-      
       <div className="modal-buttons">
-        <button onClick={closeModal}>
-          Cancel
+        <button onClick={closeModal}>Cancel</button>
+        <button className="add-pin-submit" onClick={nextStep} disabled={!pinData.anime}>
+          Next
         </button>
-
-      <button
-        onClick={nextStep}
-        disabled={!pinData.anime}
-      >
-        Next
-      </button>
       </div>
     </div>
   );

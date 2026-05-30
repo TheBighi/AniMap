@@ -24,7 +24,11 @@ const healthCheck = async (req, res, next) => {
 
 const register = async (req, res, next) => {
     try {
-        const { username, email, password } = req.body
+        const { username, email, password, confirmPassword } = req.body;
+
+        if (password !== confirmPassword) {
+            return res.status(400).json({ msg: 'Passwords do not match' });
+        }
 
         let user = await User.findOne({
             where: { email: email}
@@ -93,4 +97,20 @@ const login = async (req, res, next) => {
     }
 }
 
-module.exports = { healthCheck, register, login };
+const me = async (req, res, next) => {
+    try {
+        const user = await User.findByPk(req.user.id, {
+            attributes: ['username', 'email']
+        });
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        res.json({ username: user.username, email: user.email });
+    } catch (err) {
+        next(new BackError(500, err, "INTERNAL_SERVER_ERROR"));
+    }
+}
+
+module.exports = { healthCheck, register, login, me };
