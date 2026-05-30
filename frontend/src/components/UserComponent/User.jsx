@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route, NavLink, useNavigate } from "react-router
 import EditPin from "../PopUpModalComponent/EditPin";
 import DeleteConfirm from "../PopUpModalComponent/DeleteConfirm";
 import "./User.css";
+import useMediaQuery from "../../hooks/useMediaQuery";
 
 const fetchUserPins = async () => {
   const response = await fetch("http://localhost:3006/api/pins/userPins", {
@@ -17,6 +18,7 @@ const fetchUserPins = async () => {
 
 function User() {
   const { username, logout } = useContext(AuthContext);
+  const isMobile = useMediaQuery("(max-width: 768px)");
 
   const [pins, setPins] = useState([]);
   const [editingPin, setEditingPin] = useState(null);
@@ -139,7 +141,13 @@ function User() {
 
                   <h3 className="cardAnime">{pin.animeName}</h3>
 
-                  <p className="cardDescription">{pin.description}</p>
+                  {!isMobile ? (
+                    <p className="cardDescription">{pin.description}</p>
+                  ) : (
+                    <p className="cardDescription cardDescriptionCompact">
+                      {pin.description}
+                    </p>
+                  )}
 
                   <div className="imagesRow">
                     <img

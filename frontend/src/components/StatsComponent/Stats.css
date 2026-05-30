@@ -49,3 +49,36 @@
   color: #5a5a5a;
   margin-bottom: 30px;
 }
+
+
+/* MobileLayout-only compact styling (does not affect desktop Layout) */
+.mobileShell .mainContent {
+  padding: 12px 0 0;
+}
+
+.mobileShell .titleSection {
+  margin-bottom: 16px;
+}
+
+.mobileShell .titleBar {
+  height: 70px;
+  border-radius: 20px;
+}
+
+.mobileShell .pageTitle {
+  left: 18px;
+  font-size: 28px;
+}
+
+.mobileShell .chartWrapper {
+  padding: 12px;
+  border-radius: 16px;
+  border-width: 3px;
+  margin-bottom: 14px;
+  overflow: hidden;
+}
+
+.mobileShell .chartTitle {
+  font-size: 18px;
+  margin-bottom: 10px;
+}

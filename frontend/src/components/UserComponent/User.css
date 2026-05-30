@@ -252,6 +252,99 @@
   }
 }
 
+
+/* MobileLayout-only cleanup (does not affect desktop Layout) */
+.mobileShell .userPage {
+  min-height: auto;
+}
+
+.mobileShell .mainContent {
+  padding: 12px 0 0;
+}
+
+.mobileShell .titleSection {
+  margin-bottom: 16px;
+}
+
+.mobileShell .titleBar {
+  height: 70px;
+  border-radius: 20px;
+}
+
+.mobileShell .pageTitle {
+  left: 18px;
+  font-size: 28px;
+}
+
+.mobileShell .accountHeader {
+  margin-bottom: 18px;
+  gap: 12px;
+}
+
+.mobileShell .greetingText {
+  font-size: 20px;
+}
+
+.mobileShell .logoutButton {
+  padding: 10px 14px;
+  border-radius: 16px;
+  font-size: 14px;
+}
+
+.mobileShell .cardsWrapper {
+  gap: 14px;
+}
+
+.mobileShell .pinCard {
+  padding: 14px;
+  gap: 12px;
+}
+
+.mobileShell .cardPanel {
+  padding: 14px;
+  border-radius: 18px;
+}
+
+.mobileShell .cardTitle {
+  font-size: 18px;
+  margin-bottom: 6px;
+}
+
+.mobileShell .cardAnime {
+  font-size: 15px;
+  margin-bottom: 10px;
+}
+
+.mobileShell .imagesRow {
+  gap: 10px;
+  justify-content: flex-start;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  padding-bottom: 6px;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+
+.mobileShell .previewImage {
+  min-width: 0;
+  width: 100%;
+  height: 180px;
+  border-radius: 16px;
+}
+
+.mobileShell .actionsColumn {
+  width: 100%;
+  flex-direction: row;
+  gap: 10px;
+}
+
+.mobileShell .actionButton {
+  flex: 1;
+  font-size: 16px;
+  border-radius: 16px;
+  padding: 12px 10px;
+}
+
 .emptyPins {
   width: 100%;
   padding: 80px 40px;

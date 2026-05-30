@@ -1,10 +1,24 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { BarChart } from "@mui/x-charts/BarChart";
 import "./Stats.css";
+import useMediaQuery from "../../hooks/useMediaQuery";
+import useWindowSize from "../../hooks/useWindowSize";
 
 function Stats() {
   const [topAnimes, setTopAnimes] = useState([]);
   const [topRegions, setTopRegions] = useState([]);
+  const isMobile = useMediaQuery("(max-width: 768px)");
+  const { width: windowWidth } = useWindowSize();
+
+  const chartDims = useMemo(() => {
+    if (!isMobile) {
+      return { width: 800, height: 600, yAxisWidth: 90 };
+    }
+
+    // Fit inside MobileLayout padding; keep readable touch-friendly sizing
+    const safeWidth = Math.max(280, Math.min(420, windowWidth - 24));
+    return { width: safeWidth, height: 360, yAxisWidth: 70 };
+  }, [isMobile, windowWidth]);
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -39,8 +53,8 @@ function Stats() {
         <h2 className="chartTitle">Top Anime</h2>
         <BarChart
           layout="horizontal"
-          width={800}
-          height={600}
+          width={chartDims.width}
+          height={chartDims.height}
           series={[
             {
               data: topAnimes.map((anime) => anime.count),
@@ -52,7 +66,7 @@ function Stats() {
             {
               scaleType: "band",
               data: topAnimes.map((anime) => anime.animeName),
-              width: 90,
+              width: chartDims.yAxisWidth,
             },
           ]}
           xAxis={[
@@ -67,8 +81,8 @@ function Stats() {
         <h2 className="chartTitle">Top Regions</h2>
         <BarChart
           layout="horizontal"
-          width={800}
-          height={600}
+          width={chartDims.width}
+          height={chartDims.height}
           series={[
             {
               data: topRegions.map((region) => region.count),
@@ -80,7 +94,7 @@ function Stats() {
             {
               scaleType: "band",
               data: topRegions.map((region) => region.Region.name),
-              width: 90,
+              width: chartDims.yAxisWidth,
             },
           ]}
           xAxis={[
