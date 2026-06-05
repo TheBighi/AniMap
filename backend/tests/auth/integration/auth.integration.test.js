@@ -2,8 +2,8 @@ process.env.NODE_ENV = "test";
 process.env.JWT_SECRET = "test-secret";
 
 const request = require("supertest");
-const app = require("../../app");
-const db = require("../../models");
+const app = require("../../../app");
+const db = require("../../../models");
 
 describe("Auth integration", () => {
   beforeAll(async () => {
