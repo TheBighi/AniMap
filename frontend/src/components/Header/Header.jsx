@@ -4,12 +4,17 @@ import { AuthContext } from "../../context/AuthContext";
 import "./Header.css";
 
 function Header() {
-  const { logout } = useContext(AuthContext);
+  const { isLoggedIn, logout } = useContext(AuthContext);
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    logout();
-    navigate("/login");
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate("/login");
+    } catch (error) {
+      console.error("Logout failed:", error);
+      alert("Logout failed. Please try again.");
+    }
   };
 
   return (
@@ -29,12 +34,22 @@ function Header() {
           Statistics
         </NavLink>
 
-        <NavLink
-          to="/user"
-          className={({ isActive }) => (isActive ? "activeNav" : "")}
-        >
-          Account
-        </NavLink>
+        {isLoggedIn && (
+          <NavLink
+            to="/user"
+            className={({ isActive }) => (isActive ? "activeNav" : "")}
+          >
+            Account
+          </NavLink>
+        )}
+        {!isLoggedIn && (
+          <NavLink
+            to="/login"
+            className={({ isActive }) => (isActive ? "activeNav" : "")}
+          >
+            Login
+          </NavLink>
+        )}
       </nav>
     </header>
   );

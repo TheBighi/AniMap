@@ -27,6 +27,11 @@ const saveBase64Image = async (imageUrl, destPathWithoutExt) => {
 function getRegionIdFromCoordinates(latitude, longitude) {
     const result = reverse.get_country(latitude, longitude);
 
+    if (!result || !result.code) {
+        console.log(`No country found for coordinates: ${latitude}, ${longitude}`);
+        return -1; 
+    }
+
     const threeLetterCode = result.code;
 
     let countryCode;
@@ -86,7 +91,7 @@ const createPin = async (req, res, next) => {
 
         const animes = await searchService.fetchAnimeData(animeName);
         
-        console.log(animes)
+
         if (!animes.includes(animeName)) {
             return res.status(400).json({ message: "Anime not found in Anilist", animes });
         }

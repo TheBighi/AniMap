@@ -6,6 +6,25 @@ export const AuthProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [username, setUsername] = useState(null);
 
+  const clearAuthState = useCallback(() => {
+    setUsername(null);
+    setIsLoggedIn(false);
+    localStorage.removeItem("username");
+  }, []);
+
+  const logout = useCallback(async () => {
+    const response = await fetch("http://localhost:3006/api/auth/logout", {
+      method: "POST",
+      credentials: "include",
+    });
+
+    if (!response.ok) {
+      throw new Error(`Logout failed with status ${response.status}`);
+    }
+
+    clearAuthState();
+  }, [clearAuthState]);
+
   // check if user is logged in on mount (from localStorage)
   useEffect(() => {
     const checkAuth = async () => {
@@ -23,27 +42,21 @@ export const AuthProvider = ({ children }) => {
 
           localStorage.setItem("username", data.username);
         } else {
-          logout();
+          clearAuthState();
         }
       } catch (error) {
         console.error("Auth check error:", error);
-        logout();
+        clearAuthState();
       }
     };
 
     checkAuth();
-  }, []);
+  }, [clearAuthState]);
 
   const login = useCallback((user) => {
     setUsername(user);
     setIsLoggedIn(true);
     localStorage.setItem("username", user);
-  }, []);
-
-  const logout = useCallback(() => {
-    setUsername(null);
-    setIsLoggedIn(false);
-    localStorage.removeItem("username");
   }, []);
 
   const value = useMemo(
