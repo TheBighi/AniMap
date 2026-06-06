@@ -42,7 +42,7 @@ module.exports = {
       },
       regionId: {
         type: Sequelize.INTEGER,
-        allowNull: false
+        allowNull: true
       },
       createdAt: {
         allowNull: false,

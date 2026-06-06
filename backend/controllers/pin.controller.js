@@ -29,7 +29,7 @@ function getRegionIdFromCoordinates(latitude, longitude) {
 
     if (!result || !result.code) {
         console.log(`No country found for coordinates: ${latitude}, ${longitude}`);
-        return -1; 
+        return null; 
     }
 
     const threeLetterCode = result.code;
