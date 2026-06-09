@@ -295,4 +295,4 @@ const getAnimeCountByRegion = async (req, res, next) => {
     }
 };
 
-module.exports = { createPin, getAllPins, getPinById, updatePin, deletePin, getPinsByUser, getTopAnimes, getAnimeCountByRegion };
+module.exports = { createPin, getAllPins, getPinById, updatePin, deletePin, getPinsByUser, getTopAnimes, getAnimeCountByRegion, getRegionIdFromCoordinates, saveBase64Image};
