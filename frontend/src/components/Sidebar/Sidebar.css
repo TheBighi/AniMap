@@ -21,16 +21,19 @@
 .logo {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 10px;
 
   font-size: clamp(28px, 3vw, 50px);
   font-weight: 700;
 
-  position: relative;
+  position: absolute;
+  top: 20px;
+  left: 0;
+  width: 100%;
   background: #b0c9c5;
-  padding: 10px 30px;
-  margin-top: 20px;
-  margin-left: -20px;
+  padding: 10px 0;
+  box-sizing: border-box;
   text-decoration: none;
   color: inherit;
 }

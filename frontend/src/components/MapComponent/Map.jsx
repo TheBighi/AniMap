@@ -61,7 +61,7 @@ function MapComponent() {
       style: "mapbox://styles/mapbox/dark-v10",
       projection: "globe",
       center: [139.6917, 35.6895],
-      zoom: 3,
+      zoom: 2,
     });
 
     mapRef.current = map;
