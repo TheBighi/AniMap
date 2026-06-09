@@ -11,7 +11,7 @@ const { countries } = require("countries-list");
 const { whereAlpha3 } = require("iso-3166-1");
 
 const BackError = require('../utils/error');
-const { where } = require('sequelize');
+const { where, Op } = require('sequelize');
 
 const searchService = require('../services/anilistApi.js')
 
@@ -139,7 +139,16 @@ const createPin = async (req, res, next) => {
 // GET ALL PINS
 const getAllPins = async (req, res, next) => {
     try {
-        const pins = await Pin.findAll();
+        const whereClause = {};
+
+        const { startDate, endDate } = req.query;
+        if (startDate || endDate) {
+            whereClause.createdAt = {};
+            if (startDate) whereClause.createdAt[Op.gte] = new Date(startDate);
+            if (endDate) whereClause.createdAt[Op.lte] = new Date(endDate);
+        }
+
+        const pins = await Pin.findAll({ where: whereClause });
 
         res.status(200).json({
             count: pins.length,
@@ -178,6 +187,12 @@ const updatePin = async (req, res, next) => {
             return res.status(404).json({ message: "Pin not found" });
         }
 
+        // Only allow the owner to update the pin
+        const userId = req.user?.id;
+        if (!userId || pin.userId !== userId) {
+            return res.status(403).json({ message: "Not authorized to edit this pin" });
+        }
+
         const updatedPin = await pin.update(req.body);
 
         res.status(200).json({
@@ -199,6 +214,12 @@ const deletePin = async (req, res, next) => {
 
         if (!pin) {
             return res.status(404).json({ message: "Pin not found" });
+        }
+
+        // Only allow the owner to delete the pin
+        const userId = req.user?.id;
+        if (!userId || pin.userId !== userId) {
+            return res.status(403).json({ message: "Not authorized to delete this pin" });
         }
 
         await pin.destroy();

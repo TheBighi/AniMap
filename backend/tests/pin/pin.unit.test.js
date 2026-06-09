@@ -46,6 +46,24 @@ describe("Pin unit", () => {
         animes: []
     });
   });
+
+  test("Missing latitude or longitude triggers 400 validation error", async () => {
+    const formRes = await agent.post("/api/pins").send({
+        anime: "Naruto",
+        animeImage: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA",
+        description: "Missing coordinates",
+        latitude: "",
+        longitude: "",
+        realImage: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA",
+        title: "Pin without location"
+    });
+
+    expect(formRes.status).toBe(400);
+    expect(formRes.body).toEqual({
+      message: "Latitude and longitude are required"
+    });
+  });
+
     test("Adding a new pin with valid data", async () => {
         const formRes = await agent.post("/api/pins").send({
             anime: "Naruto",
