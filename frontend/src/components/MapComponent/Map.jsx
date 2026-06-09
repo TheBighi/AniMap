@@ -114,6 +114,7 @@ function MapComponent() {
       const marker = new mapboxgl.Marker({
         element: el,
         anchor: "bottom",
+        offset: [0, -7],
       })
         .setLngLat(feature.geometry.coordinates)
         .setPopup(popup)
