@@ -97,6 +97,19 @@ const login = async (req, res, next) => {
     }
 }
 
+const logout = (req, res, next) => {
+    try {
+        res.clearCookie('token', {
+            httpOnly: true,
+            secure: false,
+            sameSite: 'Lax'
+        });
+        res.status(200).json({ message: 'Logged out successfully' });
+    } catch (err) {
+        next(new BackError(500, err, "INTERNAL_SERVER_ERROR"))
+    }
+}
+
 const me = async (req, res, next) => {
     try {
         const user = await User.findByPk(req.user.id, {
@@ -113,4 +126,4 @@ const me = async (req, res, next) => {
     }
 }
 
-module.exports = { healthCheck, register, login, me };
+module.exports = { healthCheck, register, login, logout, me };

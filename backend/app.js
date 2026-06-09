@@ -20,14 +20,16 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
-sequelize
-  .authenticate()
-  .then(() => {
-    console.log("Connection established");
-  })
-  .catch((error) => {
-    console.log(error);
-  });
+if (process.env.NODE_ENV !== "test") {
+  sequelize
+    .authenticate()
+    .then(() => {
+      console.log("Connection established");
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+}
 
 const authRoutes = require("./routes/auth.routes");
 const pinRoutes = require("./routes/pin.routes");

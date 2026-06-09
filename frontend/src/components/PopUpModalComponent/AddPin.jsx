@@ -4,11 +4,15 @@ import "./Modal.css";
 import Step1 from "./Step1";
 import Step2 from "./Step2";
 
+import { AuthContext } from "../../context/AuthContext";
+import { useContext } from "react";
+
 function AddPin({ onCreatePin, defaultLat, defaultLng, isOpen: controlledIsOpen, onClose }) {
   const [internalOpen, setInternalOpen] = useState(false);
   const isControlled = controlledIsOpen !== undefined;
   const isOpen = isControlled ? controlledIsOpen : internalOpen;
   const [step, setStep] = useState(1);
+  const { isLoggedIn } = useContext(AuthContext);
 
   const [pinData, setPinData] = useState({
     title: "",
@@ -54,7 +58,7 @@ function AddPin({ onCreatePin, defaultLat, defaultLng, isOpen: controlledIsOpen,
 
   return (
     <>
-      {!isControlled && (
+      {!isControlled && isLoggedIn && (
         <button
           className="add-pin-button"
           onClick={() => setInternalOpen(true)}
