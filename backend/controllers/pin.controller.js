@@ -15,6 +15,11 @@ const { where, Op } = require('sequelize');
 
 const searchService = require('../services/anilistApi.js')
 
+const { S3Client, PutObjectCommand, DeleteObjectCommand } = require('@aws-sdk/client-s3');
+
+const s3 = new S3Client({ region: 'eu-north-1' });
+const BUCKET_NAME = 'anipin-uploads-prod';
+
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 const MAX_SIZE_BYTES = 2 * 1024 * 1024;
 const MAX_LENGTHS = {
@@ -23,7 +28,7 @@ const MAX_LENGTHS = {
     animeName: 150
 };
 
-const saveBase64Image = async (imageUrl, destPathWithoutExt) => {
+const saveBase64Image = async (imageUrl, keyName) => {
     const mimeType = imageUrl.split(";")[0].split(":")[1];
     if (!ALLOWED_TYPES.includes(mimeType)) {
         throw new Error("Invalid image type");
@@ -34,9 +39,16 @@ const saveBase64Image = async (imageUrl, destPathWithoutExt) => {
         throw new Error("Image too large");
     }
     const ext = mimeType.split("/")[1];
-    const destPath = `${destPathWithoutExt}.${ext}`;
-    await fs.writeFile(destPath, buffer); // write the buffer directly, no need for base64Data again
-    return destPath;
+    const key = `uploads/${keyName}.${ext}`;
+
+    await s3.send(new PutObjectCommand({
+        Bucket: BUCKET_NAME,
+        Key: key,
+        Body: buffer,
+        ContentType: mimeType,
+    }));
+
+    return `https://${BUCKET_NAME}.s3.eu-north-1.amazonaws.com/${key}`;
 };
 
 function getRegionIdFromCoordinates(latitude, longitude) {
@@ -72,19 +84,19 @@ function getRegionIdFromCoordinates(latitude, longitude) {
 
     switch (continentCode) {
         case "AS":
-            return 2; // rest of Asia
+            return 2;
         case "EU":
-            return 3; // EUROPE
+            return 3;
         case "NA":
-            return 4; // NORTH AMERICA
+            return 4;
         case "SA":
-            return 5; // SOUTH AMERICA
+            return 5;
         case "AF":
-            return 6; // AFRICA
+            return 6;
         case "OC":
-            return 7; // OCEANIA
+            return 7;
         case "AN":
-            return 8; // ANTARCTICA
+            return 8;
         default:
             return -1;
     }
@@ -134,8 +146,6 @@ const createPin = async (req, res, next) => {
             });
         }
 
-        console.log(userId)
-
         const animes = await searchService.fetchAnimeData(animeName);
 
         if (!animes.includes(animeName)) {
@@ -147,25 +157,19 @@ const createPin = async (req, res, next) => {
         }
 
         const regionId = getRegionIdFromCoordinates(latitude, longitude);
-
-        const uploadsDir = path.join(__dirname, "../uploads");
-        await fs.mkdir(uploadsDir, { recursive: true });
-
         const uniqueId = crypto.randomBytes(6).toString("hex");
 
-        let savedRealPath, savedAnimePath;
+        let savedRealUrl, savedAnimeUrl;
 
-        try{
-            savedRealPath  = await saveBase64Image(req.body.realImage,  path.join(uploadsDir, `${uniqueId}IRL`));
-            savedAnimePath = await saveBase64Image(req.body.animeImage, path.join(uploadsDir, `${uniqueId}ANIME`));
+        try {
+            savedRealUrl  = await saveBase64Image(req.body.realImage,  `${uniqueId}IRL`);
+            savedAnimeUrl = await saveBase64Image(req.body.animeImage, `${uniqueId}ANIME`);
 
-            const realImageStored  = `/uploads/${path.basename(savedRealPath)}`;
-            const animeImageStored = `/uploads/${path.basename(savedAnimePath)}`;
             const pin = await Pin.create({
                 title,
                 description,
-                realImageUrl: realImageStored,
-                animeImageUrl: animeImageStored,
+                realImageUrl: savedRealUrl,   // full S3 URL
+                animeImageUrl: savedAnimeUrl, // full S3 URL
                 animeName,  
                 latitude,
                 longitude,
@@ -173,15 +177,15 @@ const createPin = async (req, res, next) => {
                 userId
             });
 
-            console.log(pin)
-
             res.status(201).json({
                 message: "Pin created successfully",
                 pin
             });
         } catch (error) {
-            for (const p of [savedRealPath, savedAnimePath].filter(Boolean)) {
-                await fs.unlink(p).catch(() => {});
+            // If something failed, delete any images already uploaded to S3
+            for (const url of [savedRealUrl, savedAnimeUrl].filter(Boolean)) {
+                const key = url.split('.amazonaws.com/')[1];
+                await s3.send(new DeleteObjectCommand({ Bucket: BUCKET_NAME, Key: key })).catch(() => {});
             }
             next(new BackError(500, error, "PIN_CREATE_ERROR"));
         }
@@ -217,7 +221,6 @@ const getAllPins = async (req, res, next) => {
 const getPinById = async (req, res, next) => {
     try {
         const { id } = req.params;
-
         const pin = await Pin.findByPk(id);
 
         if (!pin) {
@@ -234,14 +237,12 @@ const getPinById = async (req, res, next) => {
 const updatePin = async (req, res, next) => {
     try {
         const { id } = req.params;
-
         const pin = await Pin.findByPk(id);
 
         if (!pin) {
             return res.status(404).json({ message: "Pin not found" });
         }
 
-        // Only allow the owner to update the pin
         const userId = req.user?.id;
         if (!userId || pin.userId !== userId) {
             return res.status(403).json({ message: "Not authorized to edit this pin" });
@@ -278,42 +279,34 @@ const updatePin = async (req, res, next) => {
 const deletePin = async (req, res, next) => {
     try {
         const { id } = req.params;
-
         const pin = await Pin.findByPk(id);
 
         if (!pin) {
             return res.status(404).json({ message: "Pin not found" });
         }
 
-        // Only allow the owner to delete the pin
         const userId = req.user?.id;
         if (!userId || pin.userId !== userId) {
             return res.status(403).json({ message: "Not authorized to delete this pin" });
         }
 
-        // Delete associated image files
-        const uploadsDir = path.join(__dirname, "../uploads");
-        const imagePaths = [pin.realImageUrl, pin.animeImageUrl].filter(Boolean);
-
+        // Delete images from S3
+        const imageUrls = [pin.realImageUrl, pin.animeImageUrl].filter(Boolean);
         await Promise.allSettled(
-            imagePaths.map(imgUrl => {
-                const filename = path.basename(imgUrl);
-                const filepath = path.join(uploadsDir, filename);
-                return fs.unlink(filepath);
+            imageUrls.map(url => {
+                const key = url.split('.amazonaws.com/')[1];
+                return s3.send(new DeleteObjectCommand({ Bucket: BUCKET_NAME, Key: key }));
             })
         );
 
         await pin.destroy();
 
-        res.status(200).json({
-            message: "Pin deleted successfully"
-        });
+        res.status(200).json({ message: "Pin deleted successfully" });
 
     } catch (err) {
         next(new BackError(500, err, "PIN_DELETE_ERROR"));
     }
 };
-
 
 const getPinsByUser = async (req, res, next) => {
     try {
@@ -329,7 +322,6 @@ const getPinsByUser = async (req, res, next) => {
 };
 
 const getTopAnimes = async (req, res, next) => {
-    const limit = 10 // for now
     try {
         const topAnimes = await Pin.findAll({
             attributes: ['animeName', [db.Sequelize.fn('COUNT', db.Sequelize.col('animeName')), 'count']],
@@ -364,12 +356,10 @@ const getAnimeCountByRegion = async (req, res, next) => {
             nest: true
         });
 
-        console.log(animeCountByRegion)
-
         res.status(200).json({ animeCountByRegion });
     } catch (err) {
         next(new BackError(500, err, "ANIME_COUNT_FETCH_ERROR"));
     }
 };
 
-module.exports = { createPin, getAllPins, getPinById, updatePin, deletePin, getPinsByUser, getTopAnimes, getAnimeCountByRegion, getRegionIdFromCoordinates, saveBase64Image};
+module.exports = { createPin, getAllPins, getPinById, updatePin, deletePin, getPinsByUser, getTopAnimes, getAnimeCountByRegion, getRegionIdFromCoordinates, saveBase64Image };

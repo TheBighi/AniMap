@@ -12,14 +12,22 @@ const app = express();
 const cors = require("cors");
 
 const swaggerDocument = YAML.load('./swagger.yaml');
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, {
+  swaggerOptions: {
+    withCredentials: true,
+    requestInterceptor: (req) => {
+      req.credentials = 'include';
+      return req;
+    }
+  }
+}));
 app.use(express.json({ limit: "6mb" }));
 app.use(cookieParser());
 
 const rateLimit = require('express-rate-limit');
 
 const corsOptions = {
-  origin: "https://sandertamm.eu",
+  origin: ["https://sandertamm.eu", "http://animapbackend.eu-north-1.elasticbeanstalk.com"],
   methods: "GET,POST,PUT,DELETE,OPTIONS",
   credentials: true,
 };

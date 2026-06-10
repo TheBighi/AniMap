@@ -88,7 +88,7 @@ const login = async (req, res, next) => {
             maxAge: 5 * 60 * 60 * 1000
         });
         console.log(existingUser.username)
-        res.json({ message: 'Logged in successfully', username: existingUser.username })
+        res.json({ token: token, message: 'Logged in successfully', username: existingUser.username })
     }
 
     catch (err) {
