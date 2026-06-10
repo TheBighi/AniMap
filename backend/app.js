@@ -9,7 +9,7 @@ const sequelize = require("./utils/db");
 const app = express();
 const cors = require("cors");
 
-app.use(express.json({ limit: "50mb" }));
+app.use(express.json({ limit: "15mb" }));
 app.use(cookieParser());
 
 const corsOptions = {

@@ -85,7 +85,29 @@ const createPin = async (req, res, next) => {
             longitude,
         } = req.body;
 
-        const userId = req.user?.id; // from authMiddleware
+        const userId = req.user?.id;
+
+        if (!userId) {
+            return res.status(401).json({ message: "Unauthorized" });
+        }
+
+        const cooldownPeriod = 30 * 1000;
+        const SecondsAgo = new Date(Date.now() - cooldownPeriod);
+
+        const recentPin = await Pin.findOne({
+            where: {
+                userId: userId,
+                createdAt: {
+                    [Op.gte]: SecondsAgo
+                }
+            }
+        });
+
+        if (recentPin) {
+            return res.status(429).json({ 
+                message: "Too many requests. Please wait 30 seconds between uploading pins." 
+            });
+        }
 
         console.log(userId)
 
