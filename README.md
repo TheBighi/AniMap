@@ -137,7 +137,7 @@ Frontendis on `frontend/.env.example`, mis näitab vajalikku Mapboxi tokeni kuju
 
 Swagger UI on saadaval pärast backendi käivitamist aadressil:
 
-- http://localhost:3006/api-docs
+- http://animapbackend.eu-north-1.elasticbeanstalk.com/api-docs/
 
 See dokumentatsioon kirjeldab peamised endpointid, HTTP meetodid, päringu keha näited, vastuste näited ja veakoodid.
 

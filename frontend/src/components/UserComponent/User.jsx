@@ -213,13 +213,13 @@ function User() {
                   <div className="imagesRow">
                     <img
                       className="previewImage"
-                      src={`https://d22irt5kiloi89.cloudfront.net${pin.realImageUrl}`}
+                      src={`${pin.realImageUrl}`}
                       alt="real"
                     />
 
                     <img
                       className="previewImage"
-                      src={`https://d22irt5kiloi89.cloudfront.net${pin.animeImageUrl}`}
+                      src={`${pin.animeImageUrl}`}
                       alt="anime"
                     />
                   </div>
