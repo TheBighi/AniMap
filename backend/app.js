@@ -1,5 +1,7 @@
 const express = require("express");
 const cookieParser = require("cookie-parser");
+const swaggerUi = require('swagger-ui-express');
+const YAML = require('yamljs');
 
 const { notFoundHandler, errorHandler } = require("./middleware/globalErrorHandler");
 const authMiddleware = require("./middleware/authMiddleware");
@@ -8,6 +10,9 @@ const sequelize = require("./utils/db");
 
 const app = express();
 const cors = require("cors");
+
+const swaggerDocument = YAML.load('./swagger.yaml');
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.use(express.json({ limit: "50mb" }));
 app.use(cookieParser());
