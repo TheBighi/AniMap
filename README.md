@@ -141,6 +141,12 @@ Swagger UI on saadaval pärast backendi käivitamist aadressil:
 
 See dokumentatsioon kirjeldab peamised endpointid, HTTP meetodid, päringu keha näited, vastuste näited ja veakoodid.
 
+## Google Docs dokumentatsioon
+
+Täiendavat projekti dokumentatsiooni hoitakse Google Docs dokumendis. Kui on olemas avalik link, asendage allolev näidislink reaalsega:
+
+- https://docs.google.com/document/d/1tlvhqbwdrXiD0RCi1Ctuv6W4-xHynb0HzWWgmhb81xg/edit?usp=sharing
+
 ## Testide käivitamise juhend
 
 Backend testimiseks:
