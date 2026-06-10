@@ -13,17 +13,29 @@ const cors = require("cors");
 
 const swaggerDocument = YAML.load('./swagger.yaml');
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-
-app.use(express.json({ limit: "50mb" }));
+app.use(express.json({ limit: "6mb" }));
 app.use(cookieParser());
 
+const rateLimit = require('express-rate-limit');
+
 const corsOptions = {
-  origin: "http://localhost:5173",
+  origin: "https://sandertamm.eu",
   methods: "GET,POST,PUT,DELETE,OPTIONS",
   credentials: true,
 };
 
+const globalLimiter = rateLimit({
+    windowMs: 10 * 60 * 1000,
+    max: 100,
+});
+
+const uploadLimiter = rateLimit({
+    windowMs: 60 * 1000,
+    max: 4,
+});
+
 app.use(cors(corsOptions));
+app.use(globalLimiter);
 
 if (process.env.NODE_ENV !== "test") {
   sequelize
@@ -42,7 +54,7 @@ const animeRoutes = require("./routes/anime.routes");
 const statsRoutes = require("./routes/stats.routes");
 
 app.use("/api/auth", authRoutes);
-app.use("/api/pins", pinRoutes);
+app.use("/api/pins", pinRoutes, uploadLimiter);
 app.use("/uploads", express.static("uploads"));
 app.use("/api/anime", animeRoutes);
 app.use("/api/stats", statsRoutes);

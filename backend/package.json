@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start": "node server.js",
     "test": "cross-env NODE_ENV=test jest --runInBand",
     "test:unit": "cross-env NODE_ENV=test jest --runInBand --testPathPattern=tests/.*\\.unit\\.test\\.js",
     "test:integration": "cross-env NODE_ENV=test jest --runInBand --testPathPattern=tests/.*\\.integration\\.test\\.js"

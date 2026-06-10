@@ -24,13 +24,13 @@ function Stats() {
     const fetchStats = async () => {
       try {
         const response = await fetch(
-          "http://localhost:3006/api/stats/top-animes",
+          "https://d22irt5kiloi89.cloudfront.net/api/stats/top-animes",
         );
         const data = await response.json();
         setTopAnimes(data.topAnimes);
 
         const regionResponse = await fetch(
-          "http://localhost:3006/api/stats/top-regions",
+          "https://d22irt5kiloi89.cloudfront.net/api/stats/top-regions",
         );
         const regionData = await regionResponse.json();
         setTopRegions(regionData.animeCountByRegion);

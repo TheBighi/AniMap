@@ -14,7 +14,6 @@ const healthCheck = async (req, res, next) => {
         const users = await User.findAll();
         res.status(200).json({
             message: 'ok',
-            userCount: users.length
         });
     } catch (err) {
         next(new BackError(500, err, "INTERNAL_SERVER_ERROR"))
@@ -84,8 +83,8 @@ const login = async (req, res, next) => {
 
         res.cookie('token', token, {
             httpOnly: true,
-            secure: false,
-            sameSite: 'Lax',
+            secure: true,
+            sameSite: 'None',
             maxAge: 5 * 60 * 60 * 1000
         });
         console.log(existingUser.username)

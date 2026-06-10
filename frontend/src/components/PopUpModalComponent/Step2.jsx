@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 
@@ -48,6 +48,9 @@ function CoordinatePicker({ pinData, setPinData }) {
 }
 
 function Step2({ pinData, setPinData, prevStep, createPin, isEditing = false }) {
+  const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const lat = parseFloat(pinData.latitude);
   const lng = parseFloat(pinData.longitude);
 
@@ -73,8 +76,41 @@ function Step2({ pinData, setPinData, prevStep, createPin, isEditing = false }) 
 
   const handleImageChange = async (field, file) => {
     if (!file) return;
-    const base64 = await toBase64(file);
-    setPinData({ ...pinData, [field]: base64 });
+
+    setError(""); // Clear previous errors
+
+    // 5 MB Validation (5 * 1024 * 1024 bytes)
+    const MAX_FILE_SIZE = 5 * 1024 * 1024;
+    if (file.size > MAX_FILE_SIZE) {
+      setError(`Image "${file.name}" exceeds the 5MB limit.`);
+      setPinData({ ...pinData, [field]: null }); // Reset field
+      return;
+    }
+
+    try {
+      const base64 = await toBase64(file);
+      setPinData({ ...pinData, [field]: base64 });
+    } catch (err) {
+      setError("Failed to process image file.");
+    }
+  };
+
+  const handleSubmit = async () => {
+    setIsSubmitting(true);
+    setError("");
+    
+    try {
+      await createPin(); 
+    } catch (err) {
+      if (err.response?.status === 429) {
+        setError("Rate limit reached. Please wait 30 seconds before uploading again.");
+      } else {
+        setError(err.response?.data?.message || "An unexpected error occurred.");
+      }
+    } finally {
+      // Keep disabled briefly or let the parent component clean it up on unmount
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -100,19 +136,21 @@ function Step2({ pinData, setPinData, prevStep, createPin, isEditing = false }) 
             onChange={(e) => handleImageChange("realImage", e.target.files[0])}
           />
           <small className="coordinate-hint">
-            {pinData.realImage ? "Image selected" : "Upload image from the real location"}
+            {pinData.realImage ? "✓ Image selected" : "Upload image from the real location"}
           </small>
         </>
       )}
 
+      {error && <p style={{ color: "#e74c3c", fontSize: "14px", margin: "10px 0" }}>{error}</p>}
+
       <div className="modal-buttons">
-        <button onClick={prevStep}>Back</button>
+        <button onClick={prevStep} disabled={isSubmitting}>Back</button>
         <button
           className="add-pin-submit"
-          disabled={!isValidCoordinates || !hasImages}
-          onClick={createPin}
+          disabled={!isValidCoordinates || !hasImages || isSubmitting || !!error}
+          onClick={handleSubmit}
         >
-          {isEditing ? "Update Pin" : "Add Pin"}
+          {isSubmitting ? "Processing..." : isEditing ? "Update Pin" : "Add Pin"}
         </button>
       </div>
     </div>
