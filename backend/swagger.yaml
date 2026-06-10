@@ -70,6 +70,7 @@ components:
         email:
           type: string
       example:
+        token: "eyJhbGciOi......"
         username: "mika"
         email: "mika@example.com"
 
