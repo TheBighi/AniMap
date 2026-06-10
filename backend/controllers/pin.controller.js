@@ -222,6 +222,18 @@ const deletePin = async (req, res, next) => {
             return res.status(403).json({ message: "Not authorized to delete this pin" });
         }
 
+        // Delete associated image files
+        const uploadsDir = path.join(__dirname, "../uploads");
+        const imagePaths = [pin.realImageUrl, pin.animeImageUrl].filter(Boolean);
+
+        await Promise.allSettled(
+            imagePaths.map(imgUrl => {
+                const filename = path.basename(imgUrl);
+                const filepath = path.join(uploadsDir, filename);
+                return fs.unlink(filepath);
+            })
+        );
+
         await pin.destroy();
 
         res.status(200).json({
