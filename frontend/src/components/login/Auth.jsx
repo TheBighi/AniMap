@@ -27,7 +27,7 @@ function Auth() {
     setError("");
 
     try {
-      const response = await fetch("http://localhost:3006/api/auth/login", {
+      const response = await fetch("https://d22irt5kiloi89.cloudfront.net/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -69,7 +69,7 @@ function Auth() {
     setLoading(true);
 
     try {
-      const response = await fetch("http://localhost:3006/api/auth/register", {
+      const response = await fetch("https://d22irt5kiloi89.cloudfront.net/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",

@@ -6,7 +6,7 @@ import { AuthContext } from "../../context/AuthContext";
 import AddPin from "../PopUpModalComponent/AddPin";
 
 const fetchAllPins = async () => {
-  const response = await fetch("http://localhost:3006/api/pins");
+  const response = await fetch("https://d22irt5kiloi89.cloudfront.net/api/pins");
   const data = await response.json();
   const pins = data.pins;
 
@@ -25,8 +25,8 @@ const fetchAllPins = async () => {
         animeName: pin.animeName,
         latitude: pin.latitude,
         longitude: pin.longitude,
-        animeImgUrl: "http://localhost:3006" + pin.animeImageUrl,
-        IRLImgUrl: "http://localhost:3006" + pin.realImageUrl,
+        animeImgUrl: "https://d22irt5kiloi89.cloudfront.net" + pin.animeImageUrl,
+        IRLImgUrl: "https://d22irt5kiloi89.cloudfront.net" + pin.realImageUrl,
         createdAt: pin.createdAt,
       },
     })),
@@ -141,7 +141,7 @@ function MapComponent() {
       longitude: parseFloat(pinData.longitude),
     };
 
-    const res = await fetch("http://localhost:3006/api/pins", {
+    const res = await fetch("https://d22irt5kiloi89.cloudfront.net/api/pins", {
       method: "POST",
       credentials: "include",
       headers: {
@@ -176,8 +176,8 @@ function MapComponent() {
         animeName: pin.animeName,
         latitude: pin.latitude,
         longitude: pin.longitude,
-        animeImgUrl: "http://localhost:3006" + pin.animeImageUrl,
-        IRLImgUrl: "http://localhost:3006" + pin.realImageUrl,
+        animeImgUrl: "https://d22irt5kiloi89.cloudfront.net" + pin.animeImageUrl,
+        IRLImgUrl: "https://d22irt5kiloi89.cloudfront.net" + pin.realImageUrl,
         createdAt: pin.createdAt,
       },
     };

@@ -84,8 +84,8 @@ const login = async (req, res, next) => {
 
         res.cookie('token', token, {
             httpOnly: true,
-            secure: false,
-            sameSite: 'Lax',
+            secure: true,
+            sameSite: 'None',
             maxAge: 5 * 60 * 60 * 1000
         });
         console.log(existingUser.username)
