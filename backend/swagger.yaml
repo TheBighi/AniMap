@@ -1,0 +1,447 @@
+openapi: 3.0.0
+
+info:
+  title: AniMap API
+  version: 1.0.0
+  description: API documentation for AniMap backend services (auth, pins, anime search, stats)
+
+servers:
+  - url: http://localhost:3006
+    description: Local development server
+
+components:
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: token
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        error:
+          type: string
+      example:
+        message: "User not found"
+        error: "USER_NOT_FOUND"
+
+    RegisterRequest:
+      type: object
+      required: [username, email, password, confirmPassword]
+      properties:
+        username:
+          type: string
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+        confirmPassword:
+          type: string
+          format: password
+      example:
+        username: "mika"
+        email: "mika@example.com"
+        password: "secret123"
+        confirmPassword: "secret123"
+
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+      example:
+        email: "mika@example.com"
+        password: "secret123"
+
+    UserMeResponse:
+      type: object
+      properties:
+        username:
+          type: string
+        email:
+          type: string
+      example:
+        username: "mika"
+        email: "mika@example.com"
+
+    Pin:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        description:
+          type: string
+        realImageUrl:
+          type: string
+        animeImageUrl:
+          type: string
+        animeName:
+          type: string
+        latitude:
+          type: number
+          format: float
+        longitude:
+          type: number
+          format: float
+        regionId:
+          type: integer
+        userId:
+          type: integer
+        createdAt:
+          type: string
+          format: date-time
+      example:
+        id: 123
+        title: "Cool spot"
+        description: "A great place for anime vibes"
+        realImageUrl: "/uploads/abcIRL.jpg"
+        animeImageUrl: "/uploads/abcANIME.png"
+        animeName: "Naruto"
+        latitude: 35.6895
+        longitude: 139.6917
+        regionId: 1
+        userId: 5
+        createdAt: "2026-06-10T12:00:00Z"
+
+    CreatePinRequest:
+      type: object
+      required: [title, anime, latitude, longitude, realImage, animeImage]
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        anime:
+          type: string
+        latitude:
+          type: number
+          format: float
+        longitude:
+          type: number
+          format: float
+        realImage:
+          type: string
+          description: Base64 data URL (e.g. data:image/jpeg;base64,...) 
+        animeImage:
+          type: string
+          description: Base64 data URL (e.g. data:image/png;base64,...) 
+      example:
+        title: "Park bench"
+        description: "Found this place while walking"
+        anime: "Spirited Away"
+        latitude: 35.0
+        longitude: 135.0
+        realImage: "data:image/jpeg;base64,/9j/..."
+        animeImage: "data:image/png;base64,iVBORw0KGgo..."
+
+paths:
+  /api/auth/health:
+    get:
+      summary: Health check (requires auth)
+      security:
+        - cookieAuth: []
+      responses:
+        '200':
+          description: Health ok with user count
+          content:
+            application/json:
+              example:
+                message: "ok"
+                userCount: 10
+        '401':
+          description: Unauthorized - missing/invalid token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/auth/me:
+    get:
+      summary: Get authenticated user's info
+      security:
+        - cookieAuth: []
+      responses:
+        '200':
+          description: User details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserMeResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/auth/register:
+    post:
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '201':
+          description: User registration successful
+          content:
+            application/json:
+              example:
+                message: "user reg successful"
+        '400':
+          description: Bad request (validation error / user exists)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/auth/login:
+    post:
+      summary: Login with email & password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Logged in (cookie set)
+          content:
+            application/json:
+              example:
+                message: "Logged in successfully"
+                username: "mika"
+        '400':
+          description: Invalid credentials or user not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/auth/logout:
+    post:
+      summary: Logout and clear token cookie
+      responses:
+        '200':
+          description: Logged out
+          content:
+            application/json:
+              example:
+                message: "Logged out successfully"
+
+  /api/pins:
+    post:
+      summary: Create a new pin (requires auth)
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePinRequest'
+      responses:
+        '201':
+          description: Pin created
+          content:
+            application/json:
+              example:
+                message: "Pin created successfully"
+                pin:
+                  id: 123
+                  title: "Cool spot"
+                  description: "A great place for anime vibes"
+                  realImageUrl: "/uploads/abcIRL.jpg"
+                  animeImageUrl: "/uploads/abcANIME.png"
+                  animeName: "Naruto"
+                  latitude: 35.6895
+                  longitude: 139.6917
+                  regionId: 1
+                  userId: 5
+                  createdAt: "2026-06-10T12:00:00Z"
+        '400':
+          description: Bad request (missing fields / anime not found)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    get:
+      summary: Get all pins (optional date filters)
+      parameters:
+        - in: query
+          name: startDate
+          schema:
+            type: string
+            format: date
+          description: Filter pins created after this date (ISO)
+        - in: query
+          name: endDate
+          schema:
+            type: string
+            format: date
+          description: Filter pins created before this date (ISO)
+      responses:
+        '200':
+          description: List of pins
+          content:
+            application/json:
+              example:
+                count: 2
+                pins:
+                  - id: 1
+                    title: "Cool spot"
+                    animeName: "Naruto"
+                  - id: 2
+                    title: "Riverside"
+                    animeName: "One Piece"
+
+  /api/pins/userPins:
+    post:
+      summary: Get pins for authenticated user
+      security:
+        - cookieAuth: []
+      responses:
+        '200':
+          description: User pins
+          content:
+            application/json:
+              example:
+                pins:
+                  - id: 1
+                    title: "Cool spot"
+                    animeName: "Naruto"
+        '401':
+          description: Unauthorized
+
+  /api/pins/{id}:
+    get:
+      summary: Get a pin by id
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Pin object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pin'
+        '404':
+          description: Pin not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    put:
+      summary: Update a pin (requires auth; owner only)
+      security:
+        - cookieAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                description:
+                  type: string
+      responses:
+        '200':
+          description: Pin updated
+          content:
+            application/json:
+              example:
+                message: "Pin updated successfully"
+        '403':
+          description: Not authorized to edit
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      summary: Delete a pin (requires auth; owner only)
+      security:
+        - cookieAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Pin deleted
+          content:
+            application/json:
+              example:
+                message: "Pin deleted successfully"
+        '403':
+          description: Not authorized to delete
+
+  /api/stats/top-animes:
+    get:
+      summary: Top animes by pin count
+      responses:
+        '200':
+          description: Top animes
+          content:
+            application/json:
+              example:
+                topAnimes:
+                  - animeName: "Naruto"
+                    count: 12
+
+  /api/stats/top-regions:
+    get:
+      summary: Anime count grouped by region
+      responses:
+        '200':
+          description: Anime counts by region
+          content:
+            application/json:
+              example:
+                animeCountByRegion:
+                  - regionId: 1
+                    Region:
+                      name: "Japan"
+                    count: 42
