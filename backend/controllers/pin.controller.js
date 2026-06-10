@@ -15,12 +15,27 @@ const { where, Op } = require('sequelize');
 
 const searchService = require('../services/anilistApi.js')
 
+const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+const MAX_SIZE_BYTES = 2 * 1024 * 1024;
+const MAX_LENGTHS = {
+    title: 100,
+    description: 500,
+    animeName: 150
+};
+
 const saveBase64Image = async (imageUrl, destPathWithoutExt) => {
     const mimeType = imageUrl.split(";")[0].split(":")[1];
+    if (!ALLOWED_TYPES.includes(mimeType)) {
+        throw new Error("Invalid image type");
+    }
+    const base64Data = imageUrl.split(",")[1];
+    const buffer = Buffer.from(base64Data, 'base64');
+    if (buffer.length > MAX_SIZE_BYTES) {
+        throw new Error("Image too large");
+    }
     const ext = mimeType.split("/")[1];
     const destPath = `${destPathWithoutExt}.${ext}`;
-    const base64Data = imageUrl.split(",")[1];
-    await fs.writeFile(destPath, base64Data, "base64");
+    await fs.writeFile(destPath, buffer); // write the buffer directly, no need for base64Data again
     return destPath;
 };
 
@@ -87,6 +102,16 @@ const createPin = async (req, res, next) => {
 
         const userId = req.user?.id;
 
+        if (title?.length > MAX_LENGTHS.title) {
+            return res.status(400).json({ message: `Title must be under ${MAX_LENGTHS.title} characters` });
+        }
+        if (description?.length > MAX_LENGTHS.description) {
+            return res.status(400).json({ message: `Description must be under ${MAX_LENGTHS.description} characters` });
+        }
+        if (animeName?.length > MAX_LENGTHS.animeName) {
+            return res.status(400).json({ message: `Anime name must be under ${MAX_LENGTHS.animeName} characters` });
+        }
+
         if (!userId) {
             return res.status(401).json({ message: "Unauthorized" });
         }
@@ -112,7 +137,6 @@ const createPin = async (req, res, next) => {
         console.log(userId)
 
         const animes = await searchService.fetchAnimeData(animeName);
-        
 
         if (!animes.includes(animeName)) {
             return res.status(400).json({ message: "Anime not found in Anilist", animes });
@@ -129,30 +153,38 @@ const createPin = async (req, res, next) => {
 
         const uniqueId = crypto.randomBytes(6).toString("hex");
 
-        const savedRealPath  = await saveBase64Image(req.body.realImage,  path.join(uploadsDir, `${uniqueId}IRL`));
-        const savedAnimePath = await saveBase64Image(req.body.animeImage, path.join(uploadsDir, `${uniqueId}ANIME`));
+        let savedRealPath, savedAnimePath;
 
-        const realImageStored  = `/uploads/${path.basename(savedRealPath)}`;
-        const animeImageStored = `/uploads/${path.basename(savedAnimePath)}`;
+        try{
+            savedRealPath  = await saveBase64Image(req.body.realImage,  path.join(uploadsDir, `${uniqueId}IRL`));
+            savedAnimePath = await saveBase64Image(req.body.animeImage, path.join(uploadsDir, `${uniqueId}ANIME`));
 
-        const pin = await Pin.create({
-            title,
-            description,
-            realImageUrl: realImageStored,
-            animeImageUrl: animeImageStored,
-            animeName,  
-            latitude,
-            longitude,
-            regionId,
-            userId
-        });
+            const realImageStored  = `/uploads/${path.basename(savedRealPath)}`;
+            const animeImageStored = `/uploads/${path.basename(savedAnimePath)}`;
+            const pin = await Pin.create({
+                title,
+                description,
+                realImageUrl: realImageStored,
+                animeImageUrl: animeImageStored,
+                animeName,  
+                latitude,
+                longitude,
+                regionId,
+                userId
+            });
 
-        console.log(pin)
+            console.log(pin)
 
-        res.status(201).json({
-            message: "Pin created successfully",
-            pin
-        });
+            res.status(201).json({
+                message: "Pin created successfully",
+                pin
+            });
+        } catch (error) {
+            for (const p of [savedRealPath, savedAnimePath].filter(Boolean)) {
+                await fs.unlink(p).catch(() => {});
+            }
+            next(new BackError(500, error, "PIN_CREATE_ERROR"));
+        }
     } catch (err) {
         next(new BackError(500, err, "PIN_CREATE_ERROR"));
     }
@@ -215,7 +247,22 @@ const updatePin = async (req, res, next) => {
             return res.status(403).json({ message: "Not authorized to edit this pin" });
         }
 
-        const updatedPin = await pin.update(req.body);
+        const { title, description, animeName } = req.body;
+
+        if (title?.length > MAX_LENGTHS.title) {
+            return res.status(400).json({ message: `Title must be under ${MAX_LENGTHS.title} characters` });
+        }
+        if (description?.length > MAX_LENGTHS.description) {
+            return res.status(400).json({ message: `Description must be under ${MAX_LENGTHS.description} characters` });
+        }
+
+        const animes = await searchService.fetchAnimeData(animeName);
+
+        if (!animes.includes(animeName)) {
+            return res.status(400).json({ message: "Anime not found in Anilist", animes });
+        }
+
+        const updatedPin = await pin.update({ title, description, animeName });
 
         res.status(200).json({
             message: "Pin updated successfully",
@@ -269,21 +316,17 @@ const deletePin = async (req, res, next) => {
 
 
 const getPinsByUser = async (req, res, next) => {
-
-    console.log("HELLO")
-    const userId = req.user?.id;
-
-    
-
-    const pins = await Pin.findAll({
-        where: { userId: userId }
-    })
-
-    if (!pins) {
-        return res.status(404).json({message: "Pins by userId not found"})
+    try {
+        const userId = req.user?.id;
+        const pins = await Pin.findAll({ where: { userId } });
+        if (!pins) {
+            return res.status(404).json({ message: "Pins by userId not found" });
+        }
+        return res.status(200).json({ pins });
+    } catch (err) {
+        next(new BackError(500, err, "PIN_FETCH_USER_ERROR"));
     }
-    return res.status(200).json({ pins: pins })
-}
+};
 
 const getTopAnimes = async (req, res, next) => {
     const limit = 10 // for now

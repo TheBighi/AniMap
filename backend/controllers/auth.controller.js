@@ -14,7 +14,6 @@ const healthCheck = async (req, res, next) => {
         const users = await User.findAll();
         res.status(200).json({
             message: 'ok',
-            userCount: users.length
         });
     } catch (err) {
         next(new BackError(500, err, "INTERNAL_SERVER_ERROR"))

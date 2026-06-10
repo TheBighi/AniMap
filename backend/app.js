@@ -9,8 +9,10 @@ const sequelize = require("./utils/db");
 const app = express();
 const cors = require("cors");
 
-app.use(express.json({ limit: "15mb" }));
+app.use(express.json({ limit: "6mb" }));
 app.use(cookieParser());
+
+const rateLimit = require('express-rate-limit');
 
 const corsOptions = {
   origin: "https://sandertamm.eu",
@@ -18,7 +20,18 @@ const corsOptions = {
   credentials: true,
 };
 
+const globalLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 100,
+});
+
+const uploadLimiter = rateLimit({
+    windowMs: 60 * 1000,
+    max: 4,
+});
+
 app.use(cors(corsOptions));
+app.use(globalLimiter);
 
 if (process.env.NODE_ENV !== "test") {
   sequelize
@@ -37,7 +50,7 @@ const animeRoutes = require("./routes/anime.routes");
 const statsRoutes = require("./routes/stats.routes");
 
 app.use("/api/auth", authRoutes);
-app.use("/api/pins", pinRoutes);
+app.use("/api/pins", pinRoutes, uploadLimiter);
 app.use("/uploads", express.static("uploads"));
 app.use("/api/anime", animeRoutes);
 app.use("/api/stats", statsRoutes);
