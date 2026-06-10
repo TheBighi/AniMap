@@ -1,8 +1,12 @@
+import { useContext } from "react";
 import { Outlet, NavLink } from "react-router-dom";
 import LogoImage from "../../assets/logo-animap.png";
+import { AuthContext } from "../../context/AuthContext";
 import "./MobileLayout.css";
 
 function MobileLayout() {
+  const { isLoggedIn } = useContext(AuthContext);
+
   return (
     <div className="mobileShell">
       <header className="mobileTopBar">
@@ -21,9 +25,7 @@ function MobileLayout() {
           to="/map"
           className={({ isActive }) => (isActive ? "tabItem tabActive" : "tabItem")}
         >
-          <span className="tabIcon" aria-hidden="true">
-            {"\u{1F5FA}"}
-          </span>
+          <span className="tabIcon" aria-hidden="true">{"\u{1F5FA}"}</span>
           <span className="tabLabel">Map</span>
         </NavLink>
 
@@ -31,25 +33,30 @@ function MobileLayout() {
           to="/stats"
           className={({ isActive }) => (isActive ? "tabItem tabActive" : "tabItem")}
         >
-          <span className="tabIcon" aria-hidden="true">
-            {"\u{1F4CA}"}
-          </span>
+          <span className="tabIcon" aria-hidden="true">{"\u{1F4CA}"}</span>
           <span className="tabLabel">Stats</span>
         </NavLink>
 
-        <NavLink
-          to="/user"
-          className={({ isActive }) => (isActive ? "tabItem tabActive" : "tabItem")}
-        >
-          <span className="tabIcon" aria-hidden="true">
-            {"\u{1F464}"}
-          </span>
-          <span className="tabLabel">Account</span>
-        </NavLink>
+        {isLoggedIn ? (
+          <NavLink
+            to="/user"
+            className={({ isActive }) => (isActive ? "tabItem tabActive" : "tabItem")}
+          >
+            <span className="tabIcon" aria-hidden="true">{"\u{1F464}"}</span>
+            <span className="tabLabel">Account</span>
+          </NavLink>
+        ) : (
+          <NavLink
+            to="/login"
+            className={({ isActive }) => (isActive ? "tabItem tabActive" : "tabItem")}
+          >
+            <span className="tabIcon" aria-hidden="true">{"\u{1F511}"}</span>
+            <span className="tabLabel">Log In</span>
+          </NavLink>
+        )}
       </nav>
     </div>
   );
 }
 
 export default MobileLayout;
-

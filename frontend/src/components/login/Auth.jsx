@@ -189,6 +189,13 @@ function Auth() {
           </p>
         </>
       )}
+      <button
+        type="button"
+        className="home-button"
+        onClick={() => navigate("/")}
+      >
+        Home
+      </button>
     </div>
   );
 }

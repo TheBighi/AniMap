@@ -18,7 +18,7 @@ function Layout() {
         <footer className="appFooter">
           <div className="footerContent">
             <span>© 2026 AniMap</span>
-            <span>Manage your anime location pins with ease.</span>
+            <span>Explore beautiful sights around the world.</span>
           </div>
         </footer>
       </div>
