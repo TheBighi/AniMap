@@ -1,0 +1,44 @@
+.layout {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+  background: #b0c9c5;
+}
+
+.contentArea {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: #f0ebe2;
+  overflow: hidden;
+}
+
+.pageContent {
+  flex: 1;
+  padding: 20px 3vw 20px;
+}
+
+.appFooter {
+  width: 100%;
+  background: #d8e1dc;
+  border-top: 1px solid #c5cfca;
+  padding: 14px 3vw;
+}
+
+.footerContent {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.95rem;
+  color: #4b5d56;
+}
+
+@media (max-width: 640px) {
+  .footerContent {
+    flex-direction: column;
+    text-align: center;
+  }
+}
