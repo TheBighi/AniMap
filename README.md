@@ -1,6 +1,6 @@
 # AniMap
 
-AniMap is an anime location pinboard application. It allows users to register, authenticate, and create geo-tagged pins that combine real-world locations with anime references and images.
+AniMap on anime asukohateabe tahvli rakendus. See võimaldab kasutajatel registreeruda, autentida ja luua geosildiga märgistatud tahvleid, mis ühendavad reaalseid asukohti anime viidete ja piltidega.
 
 ## Projekti eesmärk
 
@@ -9,15 +9,16 @@ Eesmärk on pakkuda animehuvilistele veebipõhist rakendust, kus saab salvestada
 ## Kasutatud tehnoloogiad
 
 - Backend: Node.js, Express
-- Andmebaas: MySQL (development/prod), SQLite testimiseks
+- Andmebaas: AWS RDS MySQL (development/prod), SQLite testimiseks
 - ORM: Sequelize
-- Autentimine: JWT + küpsised
+- Autentimine: JWT + küpsiseS
 - Failihaldus: `multer`, Base64-pildi salvestus serverisse
 - Dokumentatsioon: Swagger / OpenAPI
 - Testimine: Jest, Supertest
 - Keskkonna muutujad: dotenv
 - Frontend: Vite, React
 - Täiendavad paketid: `bcryptjs`, `cookie-parser`, `cors`, `country-reverse-geocoding`, `countries-list`, `iso-3166-1`
+- Hostimine: Backend on hostitud AWS'il (EC2, CloudFront, S3 (pildid)), andmebaas on ka AWS RDS'il, frontend on Zone.ee's 
 
 ## Arhitektuur: MVC projekti kontekstis
 
