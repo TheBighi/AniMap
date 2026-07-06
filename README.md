@@ -1,6 +1,8 @@
 # AniMap
 
 AniMap on anime asukohateabe tahvli rakendus. See võimaldab kasutajatel registreeruda, autentida ja luua geosildiga märgistatud tahvleid, mis ühendavad reaalseid asukohti anime viidete ja piltidega.
+<br>
+Live demo: https://sandertamm.eu
 
 ## Projekti eesmärk
 
@@ -24,17 +26,17 @@ Eesmärk on pakkuda animehuvilistele veebipõhist rakendust, kus saab salvestada
 
 ## Kasutatud tehnoloogiad
 
-- Backend: Node.js, Express
-- Andmebaas: AWS RDS MySQL (development/prod), SQLite testimiseks
-- ORM: Sequelize
-- Autentimine: JWT + küpsiseS
-- Failihaldus: `multer`, Base64-pildi salvestus serverisse
+- Backend: Node.js, Express - kerge ja mitte liiga ette kirjutav raamistik, mis lubas meil MVC kihid ise üles ehitada, selle asemel et võidelda raskema raamistiku konventsioonidega.
+- Andmebaas: AWS RDS MySQL (development/prod), SQLite testimiseks - RDS valisime selleks, et harjutada päris tootmiskeskkonna sarnase, hallatava andmebaasiga töötamist (varukoopiad, ühenduste piirangud, võrguseaded), mitte lokaalse Dockeri andmebaasiga, mis need probleemid varjab; SQLite testides kiiruse ja väliste sõltuvusteta CI jaoks.
+- ORM: Sequelize - andis meile migratsioonid ja mudelitasandi valideerimise, selle asemel et kirjutada iga päringu jaoks käsitsi SQL-i.
+- Autentimine: JWT + küpsised - JWT, et backend jääks olekuta (state'ita, ei pea haldama sessioonipoodi); token on salvestatud httpOnly küpsisesse, mitte localStorage'isse, et vähendada XSS-i kaudu tokeni kättesaamise riski.
+- Failihaldus: `multer`, Base64-pildi salvestus serverisse - valisime S3 EC2/EB instantsi kohaliku salvestuse asemel, et üleslaaditud pildid säiliksid ka pärast taaskäivitamist või uut deploy'd. Kui ma selle uuesti ehitaksin, viiksin piltide üleslaadimise üle eelallkirjastatud S3 URL-i lahendusele, selle asemel et suunata need läbi taustasüsteemi.
 - Dokumentatsioon: Swagger / OpenAPI
 - Testimine: Jest, Supertest
 - Keskkonna muutujad: dotenv
-- Frontend: Vite, React
-- Täiendavad paketid: `bcryptjs`, `cookie-parser`, `cors`, `country-reverse-geocoding`, `countries-list`, `iso-3166-1`
-- Hostimine: Backend on hostitud AWS'il (EC2, CloudFront, S3 (pildid)), andmebaas on ka AWS RDS'il, frontend on Zone.ee's 
+- Frontend: Vite, React - Vite kiirema arenduskeskkonna ja HMR jaoks võrreldes CRA aeglasema build-protsessiga.
+- Täiendavad paketid: `bcryptjs` (paroolide räsimine), `cookie-parser`, `cors` (frontend ja backend erinevatel domeenidel/hostidel, seega oli vajalik selgesõnaline CORS-i seadistus), `country-reverse-geocoding` + `countries-list` + `iso-3166-1` (pini koordinaatide teisendamiseks riigiks/piirkonnaks "populaarsete piirkondade" funktsiooni jaoks).
+- Hostimine: Backend on AWS'il EC2 koos CloudFrontiga ees ja S3-ga piltide jaoks; andmebaas AWS RDS-is; frontend Zone.ee's — jagasime frontendi ja backendi hostimise, et jäljendada päris tootmiskeskkonna tavapärast eraldatust
 
 ## Arhitektuur: MVC projekti kontekstis
 
@@ -160,7 +162,7 @@ See dokumentatsioon kirjeldab peamised endpointid, HTTP meetodid, päringu keha 
 
 ## Google Docs dokumentatsioon
 
-Täiendavat projekti dokumentatsiooni hoitakse Google Docs dokumendis. Kui on olemas avalik link, asendage allolev näidislink reaalsega:
+Täiendavat projekti dokumentatsiooni hoitakse Google Docs dokumendis.
 
 - https://docs.google.com/document/d/1tlvhqbwdrXiD0RCi1Ctuv6W4-xHynb0HzWWgmhb81xg/edit?usp=sharing
 
@@ -204,8 +206,8 @@ Näited ja kontrollpunktid:
 
 ## Meeskonnaliikmed ja tööjaotus
 
-- **Olha** - projekti arendus, backend API, testid, React kasutajaliidese arendus, README, Swagger.
-- **Sander** - projekti arendus, backend API, testid, ORM mudelid, auth-lahendus.
+- **Sander** - Implementeerisin JWT-autentimise ja küpsiste halduse, täiustasin integratsiooni ja unit teste, lõin Sequelize'i mudelid ja migratsioonid ning juurutasin taustasüsteemi AWS Elastic Beanstalki, kasutades RDS-i, S3-e ja CloudFronti.
+- **Olha** - Implementeerisin pin controllerid, implementeerisin integratsiooni ja unit testid, React kasutajaliidese arendus, dokumentatsioon, README, Swagger.
 
 ## Lisainfo
 
