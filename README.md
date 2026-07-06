@@ -6,6 +6,23 @@ AniMap on anime asukohateabe tahvli rakendus. See võimaldab kasutajatel registr
 
 Eesmärk on pakkuda animehuvilistele veebipõhist rakendust, kus saab salvestada ja jagada anime-teemalisi asukohapunkte ning vaadata populaarsemaid animeid ja piirkondi.
 
+## Pildid
+
+### Kaart
+
+![Kaart 1](https://raw.githubusercontent.com/TheBighi/TheBighi/refs/heads/main/images/map1.png)
+![Kaart 2](https://raw.githubusercontent.com/TheBighi/TheBighi/refs/heads/main/images/map2.png)
+
+### Kasutajakonto
+
+![Konto vaade 1](https://raw.githubusercontent.com/TheBighi/TheBighi/refs/heads/main/images/animapAccount1.png)
+![Konto vaade 2](https://raw.githubusercontent.com/TheBighi/TheBighi/refs/heads/main/images/animapAccount2.png)
+
+### Statistika
+
+![Statistika 1](https://raw.githubusercontent.com/TheBighi/TheBighi/refs/heads/main/images/statistics1.png)
+![Statistika 2](https://raw.githubusercontent.com/TheBighi/TheBighi/refs/heads/main/images/Statistics2.png)
+
 ## Kasutatud tehnoloogiad
 
 - Backend: Node.js, Express
