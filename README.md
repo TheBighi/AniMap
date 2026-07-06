@@ -1,7 +1,7 @@
 # AniMap
 
 AniMap on anime asukohateabe tahvli rakendus. See võimaldab kasutajatel registreeruda, autentida ja luua geosildiga märgistatud tahvleid, mis ühendavad reaalseid asukohti anime viidete ja piltidega.
-<br>
+<br><br>
 Live demo: https://sandertamm.eu
 
 ## Projekti eesmärk
