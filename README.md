@@ -9,9 +9,8 @@ Eesmärk on pakkuda animehuvilistele veebipõhist rakendust, kus saab salvestada
 ## Pildid
 
 ### Kaart
-
-![Kaart 1](https://raw.githubusercontent.com/TheBighi/TheBighi/refs/heads/main/images/map1.png)
-![Kaart 2](https://raw.githubusercontent.com/TheBighi/TheBighi/refs/heads/main/images/map2.png)
+![Kaart 1](https://raw.githubusercontent.com/TheBighi/TheBighi/refs/heads/main/images/map2.png)
+![Kaart 2](https://raw.githubusercontent.com/TheBighi/TheBighi/refs/heads/main/images/map1.png)
 
 ### Kasutajakonto
 
