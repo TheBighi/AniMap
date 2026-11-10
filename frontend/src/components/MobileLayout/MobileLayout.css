@@ -38,6 +38,20 @@
   letter-spacing: 0.2px;
 }
 
+.mobilePrivacyLink {
+  margin-left: auto;
+  font-size: 13px;
+  font-weight: 600;
+  color: #4b6a7a;
+  text-decoration: none;
+  padding: 8px;
+  border-radius: 10px;
+}
+
+.mobilePrivacyLink:hover {
+  background: rgba(176, 201, 197, 0.35);
+}
+
 .mobileMain {
   flex: 1;
   min-height: 0;

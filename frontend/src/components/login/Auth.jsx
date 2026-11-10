@@ -1,5 +1,5 @@
 import { useState, useContext } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 import "./Auth.css";
 
@@ -180,6 +180,11 @@ function Auth() {
               {loading ? "Registering..." : "Register"}
             </button>
           </form>
+
+          <p className="auth-privacy-note">
+            By creating an account you agree to our{" "}
+            <Link to="/privacy">Privacy Policy</Link>.
+          </p>
 
           <p className="auth-switch">
             Already have an account?{" "}

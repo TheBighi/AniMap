@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { Outlet, NavLink } from "react-router-dom";
+import { Outlet, NavLink, Link } from "react-router-dom";
 import LogoImage from "../../assets/logo-animap.png";
 import { AuthContext } from "../../context/AuthContext";
 import "./MobileLayout.css";
@@ -14,6 +14,9 @@ function MobileLayout() {
           <img src={LogoImage} alt="" className="mobileBrandLogo" />
           <span className="mobileBrandText">AniMap</span>
         </NavLink>
+        <Link to="/privacy" className="mobilePrivacyLink">
+          Privacy
+        </Link>
       </header>
 
       <main className="mobileMain">

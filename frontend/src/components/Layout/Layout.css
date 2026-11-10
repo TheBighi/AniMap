@@ -36,6 +36,17 @@
   color: #4b5d56;
 }
 
+.footerLink {
+  color: #4b5d56;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.footerLink:hover {
+  text-decoration: underline;
+}
+
 @media (max-width: 640px) {
   .footerContent {
     flex-direction: column;

@@ -6,6 +6,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Auth from "./components/login/Auth";
 import Layout from "./components/Layout/Layout";
 import MobileLayout from "./components/MobileLayout/MobileLayout";
+import PrivacyPolicy from "./components/PrivacyPolicy/PrivacyPolicy";
+import PrivacyConsent from "./components/PrivacyPolicy/PrivacyConsent";
 import useMediaQuery from "./hooks/useMediaQuery";
 
 function App() {
@@ -14,12 +16,15 @@ function App() {
 
   return (
     <BrowserRouter>
+      <PrivacyConsent />
+
       <Routes>
         <Route element={<Shell />}>
           <Route path="/map" element={<MapComponent />} />
           <Route path="/" element={<MapComponent />} />
           <Route path="/user" element={<UserComponent />} />
           <Route path="/stats" element={<StatsComponent />} />
+          <Route path="/privacy" element={<PrivacyPolicy />} />
         </Route>
 
         <Route path="/login" element={<Auth />} />

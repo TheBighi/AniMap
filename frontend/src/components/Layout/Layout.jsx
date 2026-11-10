@@ -1,6 +1,6 @@
 import Sidebar from "../Sidebar/Sidebar";
 import Header from "../Header/Header";
-import { Outlet } from "react-router-dom";
+import { Link, Outlet } from "react-router-dom";
 import "./Layout.css";
 
 function Layout() {
@@ -19,6 +19,9 @@ function Layout() {
           <div className="footerContent">
             <span>© 2026 AniMap</span>
             <span>Explore beautiful sights around the world.</span>
+            <Link to="/privacy" className="footerLink">
+              Privacy Policy
+            </Link>
           </div>
         </footer>
       </div>

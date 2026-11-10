@@ -1,0 +1,113 @@
+.privacyConsentOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(3px);
+}
+
+.privacyConsentBox {
+  width: min(560px, 100%);
+  max-height: 85vh;
+  overflow-y: auto;
+  background: #fffdf9;
+  border: 3px solid #b0c9c5;
+  border-radius: 24px;
+  padding: 28px;
+  box-sizing: border-box;
+  text-align: left;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.25);
+}
+
+.privacyConsentBox h2 {
+  margin: 0 0 14px;
+  font-size: clamp(20px, 2.4vw, 26px);
+  font-weight: 700;
+  color: #4b5d56;
+  letter-spacing: 0;
+}
+
+.privacyConsentBox p {
+  margin: 0 0 12px;
+  font-size: 0.98rem;
+  line-height: 1.55;
+  color: #3f4744;
+}
+
+.privacyConsentBox ul {
+  margin: 0 0 14px;
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.privacyConsentBox li {
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: #3f4744;
+}
+
+.privacyConsentBox strong {
+  color: #33403a;
+}
+
+.privacyConsentButtons {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.privacyConsentSecondary,
+.privacyConsentAccept {
+  padding: 12px 22px;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.privacyConsentSecondary {
+  background: transparent;
+  border: 2px solid #6d889b;
+  color: #4b6a7a;
+}
+
+.privacyConsentSecondary:hover {
+  background: rgba(109, 136, 155, 0.12);
+}
+
+.privacyConsentAccept {
+  background: #6d889b;
+  border: 2px solid #6d889b;
+  color: #ffffff;
+}
+
+.privacyConsentAccept:hover {
+  background: #5a7284;
+  border-color: #5a7284;
+}
+
+@media (max-width: 480px) {
+  .privacyConsentBox {
+    padding: 20px;
+    border-radius: 18px;
+  }
+
+  .privacyConsentButtons {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+}
