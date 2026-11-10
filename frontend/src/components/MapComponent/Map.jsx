@@ -126,7 +126,7 @@ function MapComponent() {
       }).setHTML(`
         <div class="popup-content">
           ${popupTitle ? `<h3 class="popup-title">${escapeHtml(popupTitle)}</h3>` : ""}
-          <p class="popup-description"><strong>Description:</strong> ${escapeHtml(description)}</p>
+          ${description ? `<p class="popup-description"><strong>Description:</strong> ${escapeHtml(description)}</p>` : ""}
           <div class="images-container">
             ${feature.properties.IRLImgUrl ? `<img src="${escapeHtml(feature.properties.IRLImgUrl)}" alt="Real life location" class="popup-image" />` : ""}
             ${feature.properties.animeImgUrl ? `<img src="${escapeHtml(feature.properties.animeImgUrl)}" alt="Anime scene" class="popup-image" />` : ""}
