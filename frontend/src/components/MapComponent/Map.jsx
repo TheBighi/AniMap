@@ -5,6 +5,19 @@ import "./Map.css";
 import { AuthContext } from "../../context/AuthContext";
 import AddPin from "../PopUpModalComponent/AddPin";
 
+const escapeHtml = (value) =>
+  String(value ?? "").replace(
+    /[&<>"']/g,
+    (char) =>
+      ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;",
+      })[char],
+  );
+
 const fetchAllPins = async () => {
   const response = await fetch("https://api.sandertamm.eu/api/pins");
   const data = await response.json();
@@ -94,19 +107,33 @@ function MapComponent() {
 
       el.appendChild(img);
 
+      const { title, animeName, description, latitude, longitude } =
+        feature.properties;
+      const popupTitle = [title, animeName].filter(Boolean).join(" from ");
+      const displayLat =
+        latitude !== undefined && latitude !== null
+          ? latitude
+          : feature.geometry.coordinates[1];
+      const displayLng =
+        longitude !== undefined && longitude !== null
+          ? longitude
+          : feature.geometry.coordinates[0];
+
       const popup = new mapboxgl.Popup({
         closeButton: true,
         closeOnClick: false,
         className: "custom-popup",
       }).setHTML(`
         <div class="popup-content">
-          ${feature.properties.title ? `<h3>${feature.properties.title}</h3>` : ""}
-          <p><strong>Description:</strong> ${feature.properties.description}</p>
-          ${feature.properties.animeName ? `<p><strong>Anime:</strong> ${feature.properties.animeName}</p>` : ""}
-          <p><strong>Coords:</strong> ${feature.properties.latitude || feature.geometry.coordinates[1]}, ${feature.properties.longitude || feature.geometry.coordinates[0]}</p>
+          ${popupTitle ? `<h3 class="popup-title">${escapeHtml(popupTitle)}</h3>` : ""}
+          <p class="popup-description"><strong>Description:</strong> ${escapeHtml(description)}</p>
           <div class="images-container">
-            ${feature.properties.animeImgUrl ? `<img src="${feature.properties.animeImgUrl}" alt="Anime Image" class="popup-image" />` : ""}
-            ${feature.properties.IRLImgUrl ? `<img src="${feature.properties.IRLImgUrl}" alt="IRL Image" class="popup-image" />` : ""}
+            ${feature.properties.IRLImgUrl ? `<img src="${escapeHtml(feature.properties.IRLImgUrl)}" alt="Real life location" class="popup-image" />` : ""}
+            ${feature.properties.animeImgUrl ? `<img src="${escapeHtml(feature.properties.animeImgUrl)}" alt="Anime scene" class="popup-image" />` : ""}
+          </div>
+          <div class="popup-footer">
+            <span class="popup-coords">Coords: ${escapeHtml(displayLat)}, ${escapeHtml(displayLng)}</span>
+            ${animeName ? `<span class="popup-anime-pill">${escapeHtml(animeName)}</span>` : ""}
           </div>
         </div>
       `);
