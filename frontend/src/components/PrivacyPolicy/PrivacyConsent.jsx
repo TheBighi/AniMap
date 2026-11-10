@@ -14,8 +14,11 @@ function PrivacyConsent() {
     }
   });
 
+  const isPrivacyPage = location.pathname.startsWith("/privacy");
+  const isVisible = isOpen && !isPrivacyPage;
+
   useEffect(() => {
-    if (!isOpen) return undefined;
+    if (!isVisible) return undefined;
 
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
@@ -23,7 +26,7 @@ function PrivacyConsent() {
     return () => {
       document.body.style.overflow = previousOverflow;
     };
-  }, [isOpen]);
+  }, [isVisible]);
 
   const handleAccept = () => {
     try {
@@ -34,7 +37,7 @@ function PrivacyConsent() {
     setIsOpen(false);
   };
 
-  if (!isOpen || location.pathname.startsWith("/privacy")) return null;
+  if (!isVisible) return null;
 
   return (
     <div className="privacyConsentOverlay">

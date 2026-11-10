@@ -114,8 +114,6 @@ function PrivacyPolicy() {
             operate the website and database. These providers may process
             personal information on our behalf.
           </p>
-          <p className="privacyNote">
-          </p>
         </section>
 
         <section className="privacySection">
