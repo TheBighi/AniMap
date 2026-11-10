@@ -1,19 +1,39 @@
-version: '3.9'
-
 services:
   mysql:
     image: mysql:8.0
     container_name: animap-mysql
-    restart: always
+    restart: unless-stopped
+    command: --innodb-buffer-pool-size=128M --performance-schema=OFF
     environment:
-      MYSQL_ROOT_PASSWORD: qwerty
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASS}
       MYSQL_DATABASE: AniMap
       MYSQL_USER: animap_user
-      MYSQL_PASSWORD: qwerty
-    ports:
-      - "3306:3306"
+      MYSQL_PASSWORD: ${DB_PASS}
     volumes:
       - animap_data:/var/lib/mysql
 
+  animap-backend:
+    build: ./backend
+    container_name: animap-backend
+    restart: unless-stopped
+    depends_on: [mysql]
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DB_HOST: mysql
+      DB_NAME: AniMap
+      DB_USER: animap_user
+      DB_PASS: ${DB_PASS}
+      JWT_SECRET: ${JWT_SECRET}
+      PUBLIC_BASE_URL: https://api.sandertamm.eu
+    volumes:
+      - animap_uploads:/app/uploads
+    networks: [default, web]
+
 volumes:
   animap_data:
+  animap_uploads:
+
+networks:
+  web:
+    external: true
