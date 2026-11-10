@@ -13,7 +13,7 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const logout = useCallback(async () => {
-    const response = await fetch("https://d22irt5kiloi89.cloudfront.net/api/auth/logout", {
+    const response = await fetch("https://api.sandertamm.eu/api/auth/logout", {
       method: "POST",
       credentials: "include",
     });
@@ -29,7 +29,7 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const response = await fetch("https://d22irt5kiloi89.cloudfront.net/api/auth/me", {
+        const response = await fetch("https://api.sandertamm.eu/api/auth/me", {
           method: "GET",
           credentials: "include",
         });

@@ -7,7 +7,7 @@ import "./User.css";
 import useMediaQuery from "../../hooks/useMediaQuery";
 
 const fetchUserPins = async () => {
-  const response = await fetch("https://d22irt5kiloi89.cloudfront.net/api/pins/userPins", {
+  const response = await fetch("https://api.sandertamm.eu/api/pins/userPins", {
     method: "POST",
     credentials: "include",
   });
@@ -62,7 +62,7 @@ function User() {
 
   const handleUpdatePin = async (pinId, pinData) => {
     try {
-      const response = await fetch(`https://d22irt5kiloi89.cloudfront.net/api/pins/${pinId}`, {
+      const response = await fetch(`https://api.sandertamm.eu/api/pins/${pinId}`, {
         method: "PUT",
         credentials: "include",
         headers: {
@@ -95,7 +95,7 @@ function User() {
   const handleDeletePin = async () => {
     try {
       const response = await fetch(
-        `https://d22irt5kiloi89.cloudfront.net/api/pins/${deletingPin.id}`,
+        `https://api.sandertamm.eu/api/pins/${deletingPin.id}`,
         {
           method: "DELETE",
           credentials: "include",

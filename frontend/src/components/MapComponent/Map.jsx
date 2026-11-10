@@ -6,7 +6,7 @@ import { AuthContext } from "../../context/AuthContext";
 import AddPin from "../PopUpModalComponent/AddPin";
 
 const fetchAllPins = async () => {
-  const response = await fetch("https://d22irt5kiloi89.cloudfront.net/api/pins");
+  const response = await fetch("https://api.sandertamm.eu/api/pins");
   const data = await response.json();
   const pins = data.pins;
 
@@ -141,7 +141,7 @@ function MapComponent() {
       longitude: parseFloat(pinData.longitude),
     };
 
-    const res = await fetch("https://d22irt5kiloi89.cloudfront.net/api/pins", {
+    const res = await fetch("https://api.sandertamm.eu/api/pins", {
       method: "POST",
       credentials: "include",
       headers: {

@@ -25,7 +25,7 @@ function Step1({ pinData, setPinData, nextStep, closeModal, isEditing = false })
       setIsLoading(true);
       try {
         const res = await fetch(
-          `https://d22irt5kiloi89.cloudfront.net/api/anime?search=${encodeURIComponent(value)}`,
+          `https://api.sandertamm.eu/api/anime?search=${encodeURIComponent(value)}`,
         );
         const data = await res.json();
         setResults(data.animes || []);
