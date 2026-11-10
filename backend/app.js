@@ -9,6 +9,7 @@ const authMiddleware = require("./middleware/authMiddleware");
 const sequelize = require("./utils/db");
 
 const app = express();
+app.set('trust proxy', 1);
 const cors = require("cors");
 
 const swaggerDocument = YAML.load('./swagger.yaml');
@@ -27,7 +28,7 @@ app.use(cookieParser());
 const rateLimit = require('express-rate-limit');
 
 const corsOptions = {
-  origin: ["https://sandertamm.eu", "http://animapbackend.eu-north-1.elasticbeanstalk.com"],
+  origin: ["https://sandertamm.eu", "http://localhost:5173"],
   methods: "GET,POST,PUT,DELETE,OPTIONS",
   credentials: true,
 };

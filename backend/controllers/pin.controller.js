@@ -15,9 +15,8 @@ const { where, Op } = require('sequelize');
 
 const searchService = require('../services/anilistApi.js')
 
-const { S3Client, PutObjectCommand, DeleteObjectCommand } = require('@aws-sdk/client-s3');
-
-const s3 = new S3Client({ region: 'eu-north-1' });
+const UPLOAD_DIR = path.join(__dirname, '..', 'uploads');
+const PUBLIC_BASE_URL = process.env.PUBLIC_BASE_URL || 'http://localhost:3000';
 const BUCKET_NAME = 'anipin-uploads-prod';
 
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
@@ -39,16 +38,16 @@ const saveBase64Image = async (imageUrl, keyName) => {
         throw new Error("Image too large");
     }
     const ext = mimeType.split("/")[1];
-    const key = `uploads/${keyName}.${ext}`;
 
-    await s3.send(new PutObjectCommand({
-        Bucket: BUCKET_NAME,
-        Key: key,
-        Body: buffer,
-        ContentType: mimeType,
-    }));
+    await fs.mkdir(UPLOAD_DIR, { recursive: true });
+    await fs.writeFile(path.join(UPLOAD_DIR, `${keyName}.${ext}`), buffer);
 
-    return `https://${BUCKET_NAME}.s3.eu-north-1.amazonaws.com/${key}`;
+    return `${PUBLIC_BASE_URL}/uploads/${keyName}.${ext}`;
+};
+
+const deleteImage = async (url) => {
+    if (!url) return;
+    await fs.unlink(path.join(UPLOAD_DIR, path.basename(url))).catch(() => {});
 };
 
 function getRegionIdFromCoordinates(latitude, longitude) {
@@ -183,14 +182,11 @@ const createPin = async (req, res, next) => {
             });
         } catch (error) {
             // If something failed, delete any images already uploaded to S3
-            for (const url of [savedRealUrl, savedAnimeUrl].filter(Boolean)) {
-                const key = url.split('.amazonaws.com/')[1];
-                await s3.send(new DeleteObjectCommand({ Bucket: BUCKET_NAME, Key: key })).catch(() => {});
-            }
+            await Promise.all([savedRealUrl, savedAnimeUrl].map(deleteImage))
             next(new BackError(500, error, "PIN_CREATE_ERROR"));
         }
     } catch (err) {
-        next(new BackError(500, err, "PIN_CREATE_ERROR"));
+        await Promise.all([savedRealUrl, savedAnimeUrl].map(deleteImage));
     }
 };
 
@@ -290,14 +286,7 @@ const deletePin = async (req, res, next) => {
             return res.status(403).json({ message: "Not authorized to delete this pin" });
         }
 
-        // Delete images from S3
-        const imageUrls = [pin.realImageUrl, pin.animeImageUrl].filter(Boolean);
-        await Promise.allSettled(
-            imageUrls.map(url => {
-                const key = url.split('.amazonaws.com/')[1];
-                return s3.send(new DeleteObjectCommand({ Bucket: BUCKET_NAME, Key: key }));
-            })
-        );
+        await Promise.all([pin.realImageUrl, pin.animeImageUrl].map(deleteImage));
 
         await pin.destroy();
 
