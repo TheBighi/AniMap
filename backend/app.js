@@ -28,7 +28,7 @@ app.use(cookieParser());
 const rateLimit = require('express-rate-limit');
 
 const corsOptions = {
-  origin: ["https://sandertamm.eu", "http://localhost:5173"],
+  origin: ["https://sandertamm.eu", "https://animap.sandertamm.eu", "http://localhost:5173"],
   methods: "GET,POST,PUT,DELETE,OPTIONS",
   credentials: true,
 };
