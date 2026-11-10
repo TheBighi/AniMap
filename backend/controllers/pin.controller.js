@@ -20,7 +20,7 @@ const PUBLIC_BASE_URL = process.env.PUBLIC_BASE_URL || 'http://localhost:3000';
 const BUCKET_NAME = 'anipin-uploads-prod';
 
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
-const MAX_SIZE_BYTES = 2 * 1024 * 1024;
+const MAX_SIZE_BYTES = 5 * 1024 * 1024;
 const MAX_LENGTHS = {
     title: 100,
     description: 500,

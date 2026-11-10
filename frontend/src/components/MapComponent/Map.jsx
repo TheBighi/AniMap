@@ -109,7 +109,7 @@ function MapComponent() {
 
       const { title, animeName, description, latitude, longitude } =
         feature.properties;
-      const popupTitle = [title, animeName].filter(Boolean).join(" from ");
+      const popupTitle = title
       const displayLat =
         latitude !== undefined && latitude !== null
           ? latitude

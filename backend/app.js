@@ -22,7 +22,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, {
     }
   }
 }));
-app.use(express.json({ limit: "6mb" }));
+app.use(express.json({ limit: "14mb" }));
 app.use(cookieParser());
 
 const rateLimit = require('express-rate-limit');
